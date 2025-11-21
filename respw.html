@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-</title>
+    <title>IPTV Player - Grey Theme</title>
     
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
@@ -16,9 +16,8 @@
 
    <style>
         :root {
-            /* เปลี่ยนสี Focus หลักจากสีเหลืองอำพัน เป็นสีเทาสว่าง */
-            /* --tv-focus-color: #fbbf24; OLD Amber */
-            --tv-focus-color: #e5e7eb; /* NEW Light Grey */
+            /* สี Focus หลัก: เปลี่ยนเป็นสีเทาขาว */
+            --tv-focus-color: #e5e7eb; 
         }
         body {
             font-family: 'Kanit', sans-serif;
@@ -26,7 +25,7 @@
             color: white;
             overflow: hidden;
         }
-       
+        
         /* Hide Scrollbar but allow scroll */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -50,39 +49,35 @@
         }
         .channel-item:hover {
             transform: translateX(4px);
-            /* เปลี่ยนพื้นหลังตอน Hover เป็นสีเทาเข้ม */
-            /* background-color: rgba(30, 41, 59, 0.8); OLD Slate Blue */
-            background-color: rgba(75, 85, 99, 0.8); /* NEW Dark Grey */
+            /* Hover เป็นสีเทาเข้ม */
+            background-color: rgba(75, 85, 99, 0.6); 
             border-color: rgba(255, 255, 255, 0.1);
         }
         .channel-item.active {
-            /* เปลี่ยน Gradient ตอน Active เป็นสีเทา */
-            /* background: linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(37,99,235,0) 100%); OLD Blue Grad */
-            background: linear-gradient(90deg, rgba(156, 163, 175, 0.3) 0%, rgba(156, 163, 175, 0) 100%); /* NEW Grey Grad */
-            /* เปลี่ยนขอบซ้ายเป็นสีเทา */
-            /* border-left: 4px solid #3b82f6; OLD Blue Border */
-            border-left: 4px solid #9ca3af; /* NEW Grey Border */
+            /* Active เป็น Gradient สีเทาขาวจางๆ */
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+            /* ขอบซ้ายสีขาว/เทา */
+            border-left: 4px solid #e5e7eb;
             border-radius: 4px;
         }
         .channel-item.active i {
-            /* เปลี่ยนไอคอนตอน Active เป็นสีขาว/เทาสว่าง และเงาสีเทา */
-            /* color: #60a5fa; OLD Light Blue */
-            color: #f3f4f6; /* NEW Whitish Grey */
-            /* filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5)); OLD Blue Shadow */
-            filter: drop-shadow(0 0 8px rgba(229, 231, 235, 0.6)); /* NEW Light Grey Shadow */
+            /* ไอคอน Active เป็นสีขาวสว่าง */
+            color: #ffffff;
+            /* เงาไอคอนสีขาวนวล */
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        }
+        .channel-item.active h3 {
+            color: #ffffff;
+            font-weight: 600;
         }
 
         /* TV Focus Logic */
         .channel-item:focus {
             outline: none;
-            /* เปลี่ยนพื้นหลังตอน Focus เป็นสีขาวจางๆ */
-            /* background-color: rgba(251, 191, 36, 0.15); OLD Amber Tint */
-            background-color: rgba(255, 255, 255, 0.15); /* NEW White Tint */
+            background-color: rgba(255, 255, 255, 0.2);
             border: 1px solid var(--tv-focus-color);
             transform: scale(1.02);
-            /* เปลี่ยนเงาตอน Focus เป็นสีเทาสว่าง */
-            /* box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); OLD Amber Shadow */
-            box-shadow: 0 0 15px rgba(229, 231, 235, 0.4); /* NEW Light Grey Shadow */
+            box-shadow: 0 0 15px rgba(229, 231, 235, 0.4);
             z-index: 10;
         }
 
@@ -91,33 +86,50 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            /* เปลี่ยนปุ่ม Play ใหญ่ตรงกลางเป็นสีเทา */
-            /* background: rgba(37, 99, 235, 0.9); OLD Blue */
-            background: rgba(107, 114, 128, 0.9); /* NEW Medium Grey */
-            border: none;
+            /* ปุ่ม Play สีเทาเข้มโปร่งแสง */
+            background: rgba(75, 85, 99, 0.9);
+            border: 1px solid rgba(255,255,255,0.2);
             width: 80px;
             height: 80px;
             border-radius: 50%;
             line-height: 80px;
             font-size: 2.5rem;
             backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+        .video-js .vjs-big-play-button:hover {
+            background: rgba(107, 114, 128, 1);
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
-        /* FIXED: Control Bar Visibility */
+        /* Play Progress Bar Colors (Grey Theme) */
+        .video-js .vjs-play-progress {
+            background-color: #d1d5db !important; /* Gray-300 */
+        }
+        .video-js .vjs-slider {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Control Bar Visibility - FIX FOR MOBILE */
         .video-js .vjs-control-bar {
-            background-color: rgba(0, 0, 0, 0.85); /* Darker for better visibility */
-            height: 3.5em; /* Standard height */
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.85);
+            height: 3.5em;
+            display: flex !important; /* Force flex display */
             visibility: visible;
             opacity: 1;
             transition: opacity 0.3s;
             bottom: 0;
-            z-index: 20; /* Ensure it is on top */
+            z-index: 20;
         }
-       
-        /* Hide controls when inactive (optional, videojs handles this, but we ensure smoothness) */
+        
+        /* Only hide controls when strictly inactive and playing */
         .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar {
             opacity: 0;
+        }
+
+        /* Mobile Specific Fixes */
+        .video-js.vjs-touch-enabled .vjs-control-bar {
+            display: flex !important;
         }
     </style>
 </head>
@@ -127,17 +139,18 @@
     <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-all duration-300 opacity-0"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-slate-900/95 border-r border-slate-800/50 z-40 transform -translate-x-full flex flex-col shadow-2xl">
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 z-40 transform -translate-x-full flex flex-col shadow-2xl">
         
         <!-- Header -->
         <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-                    <i class="ph-fill ph-play text-white text-lg"></i>
+                <!-- Logo: Grey Gradient -->
+                <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
+                    <i class="ph-fill ph-television text-white text-lg"></i>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">-</span>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">IPTV</span>
             </div>
-            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-slate-400 hover:text-white">
+            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
         </div>
@@ -145,17 +158,19 @@
         <!-- Search Box -->
         <div class="p-4 shrink-0">
             <div class="relative group">
-                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+                <!-- Icon: Grey focus -->
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors"></i>
+                <!-- Input: Grey focus ring/border -->
                 <input type="text" id="searchInput" placeholder="ค้นหาช่อง..." 
-                    class="w-full bg-slate-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-blue-500/50 focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm placeholder-slate-600">
+                    class="w-full bg-zinc-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-gray-400/50 focus:bg-zinc-800 focus:ring-2 focus:ring-gray-500/20 outline-none transition-all text-sm placeholder-gray-600">
             </div>
         </div>
 
         <!-- Categories -->
         <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right" id="categoryContainer">
-              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
-            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">ข่าว</button>
-            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">กีฬา</button>
+              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">ทั้งหมด</button>
+            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">ข่าว</button>
+            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">กีฬา</button>
         </div>
 
         <!-- Channel List -->
@@ -164,8 +179,8 @@
         </div>
         
         <!-- Footer -->
-        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-slate-500 shrink-0">
-            v1.2.0 • กด Enter เพื่อเล่น
+        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
+            v1.2.0 (Grey Edition) • กด Enter เพื่อเล่น
         </div>
     </div>
 
@@ -173,8 +188,8 @@
     <div class="flex-1 h-full relative bg-black flex flex-col justify-center items-center overflow-hidden">
         
         <!-- Floating Menu Button -->
-        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-slate-900/50 hover:bg-slate-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
-            <i class="ph ph-list text-2xl group-hover:text-blue-400 transition-colors"></i>
+        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+            <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
         </button>
 
         <!-- Video Player -->
@@ -192,12 +207,12 @@
 
             <!-- Error Overlay -->
             <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
-                <div class="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20">
-                    <i class="ph ph-warning-circle text-red-500 text-4xl"></i>
+                <div class="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4 border border-white/10">
+                    <i class="ph ph-warning-circle text-gray-400 text-4xl"></i>
                 </div>
                 <h3 class="text-2xl font-semibold text-white mb-2">สัญญาณขัดข้อง</h3>
-                <p class="text-slate-400 text-sm mb-6">ไม่สามารถเล่นไฟล์นี้ได้ในขณะนี้</p>
-                <button onclick="hideError(); toggleMenu(true);" class="px-6 py-2.5 bg-white text-black rounded-full text-sm font-medium hover:bg-slate-200 transition shadow-lg hover:scale-105">
+                <p class="text-gray-400 text-sm mb-6">ไม่สามารถเล่นไฟล์นี้ได้ในขณะนี้</p>
+                <button onclick="hideError(); toggleMenu(true);" class="px-6 py-2.5 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition shadow-lg hover:scale-105">
                     เลือกช่องอื่น
                 </button>
             </div>
@@ -208,8 +223,22 @@
     <script>
         // --- Data ---
         const channels = [
-            { id: 1, name: "PPTV", category: "News", logo: "ph-newspaper", url: "https://load1.v2h-cdn.com/digitaltv/pptv/playlist.m3u8" },
-            { id: 4, name: "Bein sport 1", category: "Sport", logo: "ph-soccer-ball", url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1726044&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjEvMjAyNSA2OjM2OjI1IFBNJmhhc2hfdmFsdWU9RjRPZ1UvL3NTN2tacFFUaGRyaENEdz09JnZhbGlkbWludXRlcz0y" }, 
+            { 
+                id: 1, 
+                name: "PPTV", 
+                category: "News", 
+                logo: "ph-newspaper", 
+                logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png",
+                url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8" 
+            },
+            { 
+                id: 4, 
+                name: "Bein sport 1", 
+                category: "Sport", 
+                logo: "ph-soccer-ball",
+                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
+                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1726044&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjEvMjAyNSA2OjM2OjI1IFBNJmhhc2hfdmFsdWU9RjRPZ1UvL3NTN2tacFFUaGRyaENEdz09JnZhbGlkbWludXRlcz0y" 
+            }, 
         ];
 
         let player;
@@ -225,13 +254,14 @@
         window.selectCategory = (category, btnElement) => {
             currentCategory = category;
             
-            // Update UI: Reset all buttons
+            // Update UI: Reset all buttons (GREY THEME)
             const buttons = document.querySelectorAll('.category-btn');
-            const activeClasses = "active bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500".split(" ");
-            const inactiveClasses = "bg-slate-800/80 text-slate-400 border border-white/5 hover:bg-slate-700 hover:text-white".split(" ");
+            // Active: White BG, Black Text
+            const activeClasses = "active bg-gray-200 text-black shadow-lg shadow-white/10 hover:bg-white".split(" ");
+            // Inactive: Dark BG, Grey Text
+            const inactiveClasses = "bg-zinc-800 text-gray-400 border border-white/5 hover:bg-zinc-700 hover:text-white".split(" ");
 
             buttons.forEach(btn => {
-                // Remove Active, Add Inactive
                 btn.classList.remove(...activeClasses);
                 btn.classList.add(...inactiveClasses);
             });
@@ -252,9 +282,6 @@
                 sidebar.classList.remove('-translate-x-full');
                 mobileOverlay.classList.remove('hidden');
                 setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
-                
-                // REMOVED: setTimeout(() => searchInput.focus(), 300); 
-                // เอาออกแล้วครับ คีย์บอร์ดจะไม่เด้งขึ้นมาบังหน้าจอ
             } else {
                 sidebar.classList.add('-translate-x-full');
                 mobileOverlay.classList.add('opacity-0');
@@ -295,7 +322,6 @@
         function renderChannels(filterText = "") {
             channelListEl.innerHTML = "";
             
-            // Filter Logic: Search AND Category
             const filtered = channels.filter(c => {
                 const matchesSearch = c.name.toLowerCase().includes(filterText.toLowerCase());
                 const matchesCategory = currentCategory === 'All' || c.category === currentCategory;
@@ -304,7 +330,7 @@
 
             if (filtered.length === 0) {
                 channelListEl.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-slate-600 opacity-50">
+                    <div class="flex flex-col items-center justify-center py-12 text-gray-600 opacity-50">
                         <i class="ph ph-ghost text-3xl mb-2"></i>
                         <span class="text-xs">ไม่พบช่องรายการ</span>
                     </div>`;
@@ -312,7 +338,6 @@
             }
 
             filtered.forEach((channel, index) => {
-                // Use original index to play correct channel
                 const realIndex = channels.indexOf(channel);
                 const btn = document.createElement('div'); 
                 btn.id = `chan-${channel.id}`;
@@ -320,16 +345,27 @@
                 
                 btn.className = `channel-item group relative p-3 mb-1 rounded-lg cursor-pointer flex items-center gap-3 border-l-2 border-transparent hover:bg-white/5 outline-none overflow-hidden`;
                 
+                // Logic to choose Image or Icon
+                let iconHtml = '';
+                if (channel.logoUrl) {
+                    // Use Image: object-contain to fit within box without cropping
+                    iconHtml = `<img src="${channel.logoUrl}" alt="${channel.name}" class="w-8 h-8 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300">`;
+                } else {
+                    // Fallback to Phosphor Icon
+                    iconHtml = `<i class="ph ${channel.logo} text-gray-400 group-hover:text-white text-lg transition-colors group-hover:scale-110"></i>`;
+                }
+
+                // Updated content structure
                 btn.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                        <i class="ph ${channel.logo} text-slate-400 group-hover:text-white text-lg transition-colors"></i>
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 shadow-inner border border-white/5 overflow-hidden bg-white/5">
+                        ${iconHtml}
                     </div>
                     <div class="flex-1 min-w-0 z-10">
-                        <h3 class="text-sm font-medium text-slate-200 group-hover:text-white truncate transition-colors">${channel.name}</h3>
-                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 truncate">${channel.category}</p>
+                        <h3 class="text-sm font-medium text-gray-300 group-hover:text-white truncate transition-colors">${channel.name}</h3>
+                        <p class="text-[10px] text-gray-500 group-hover:text-gray-400 truncate">${channel.category}</p>
                     </div>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <i class="ph-fill ph-play-circle text-blue-500 text-xl shadow-lg shadow-blue-500/50 rounded-full"></i>
+                        <i class="ph-fill ph-play-circle text-gray-300 text-xl shadow-lg shadow-white/20 rounded-full"></i>
                     </div>
                 `;
 
@@ -345,9 +381,14 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             player = videojs('my-video', {
-                // CHANGED: Use fill instead of fluid for desktop layout consistency
                 fill: true, 
-                html5: { vhs: { overrideNative: true } },
+                html5: { 
+                    vhs: { overrideNative: true },
+                    nativeAudioTracks: false,
+                    nativeVideoTracks: false,
+                    // สำคัญสำหรับมือถือ: ปิด Native Controls
+                    nativeControlsForTouch: false 
+                },
                 controlBar: {
                     children: [
                         'playToggle', 'volumePanel', 'currentTimeDisplay', 
@@ -360,7 +401,7 @@
 
             searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
 
-            renderChannels(); // Initial Render
+            renderChannels(); 
 
             // TV Remote / Keyboard Navigation
             document.addEventListener('keydown', (e) => {
@@ -378,7 +419,7 @@
                 }
             });
 
-            // --- Auto Play Config ---
+            // Auto Play Config
             const defaultId = 4; 
             
             setTimeout(() => {
