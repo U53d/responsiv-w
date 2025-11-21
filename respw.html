@@ -85,6 +85,23 @@
             font-size: 2.5rem;
             backdrop-filter: blur(4px);
         }
+
+        /* FIXED: Control Bar Visibility */
+        .video-js .vjs-control-bar {
+            background-color: rgba(0, 0, 0, 0.85); /* Darker for better visibility */
+            height: 3.5em; /* Standard height */
+            display: flex;
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s;
+            bottom: 0;
+            z-index: 20; /* Ensure it is on top */
+        }
+        
+        /* Hide controls when inactive (optional, videojs handles this, but we ensure smoothness) */
+        .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar {
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex relative bg-black">
@@ -101,7 +118,7 @@
                 <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
                     <i class="ph-fill ph-play text-white text-lg"></i>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">IPTV PRO</span>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">-</span>
             </div>
             <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-slate-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
@@ -117,9 +134,9 @@
             </div>
         </div>
 
-        <!-- Categories (Updated with Logic) -->
+        <!-- Categories -->
         <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right" id="categoryContainer">
-            <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
+              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
             <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">ข่าว</button>
             <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">กีฬา</button>
         </div>
@@ -147,7 +164,7 @@
         <div class="w-full h-full relative">
             <video
                 id="my-video"
-                class="video-js vjs-default-skin vjs-fluid h-full"
+                class="video-js vjs-default-skin vjs-fill"
                 controls
                 preload="auto"
                 playsinline 
@@ -218,7 +235,9 @@
                 sidebar.classList.remove('-translate-x-full');
                 mobileOverlay.classList.remove('hidden');
                 setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
-                setTimeout(() => searchInput.focus(), 300);
+                
+                // REMOVED: setTimeout(() => searchInput.focus(), 300); 
+                // เอาออกแล้วครับ คีย์บอร์ดจะไม่เด้งขึ้นมาบังหน้าจอ
             } else {
                 sidebar.classList.add('-translate-x-full');
                 mobileOverlay.classList.add('opacity-0');
@@ -309,7 +328,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             player = videojs('my-video', {
-                fluid: true,
+                // CHANGED: Use fill instead of fluid for desktop layout consistency
+                fill: true, 
                 html5: { vhs: { overrideNative: true } },
                 controlBar: {
                     children: [
@@ -342,8 +362,7 @@
             });
 
             // --- Auto Play Config ---
-            // ถ้าอยากเปลี่ยนช่องเริ่มต้น ให้แก้เลข 1 เป็นเลข ID ของช่องที่ต้องการ
-            const defaultId = 4; 
+            const defaultId = 1; 
             
             setTimeout(() => {
                 const index = channels.findIndex(c => c.id === defaultId);
