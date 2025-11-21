@@ -10,132 +10,141 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         :root {
-            --tv-focus-color: #fbbf24; /* Amber 400 for TV Focus */
+            --tv-focus-color: #fbbf24; /* Amber 400 */
         }
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #000;
             color: white;
-            overflow: hidden; /* Prevent scroll on body */
+            overflow: hidden;
         }
         
-        /* Custom Scrollbar (Hidden for cleaner TV look but scrollable) */
-        ::-webkit-scrollbar {
-            width: 4px;
+        /* Hide Scrollbar but allow scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f172a; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155; 
-            border-radius: 2px;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        /* Video JS Customization */
+        /* Smooth Sidebar Transition */
+        #sidebar {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Channel Item Animations */
+        .channel-item {
+            transition: all 0.2s ease-out;
+            border: 1px solid transparent;
+        }
+        .channel-item:hover {
+            transform: translateX(4px);
+            background-color: rgba(30, 41, 59, 0.8); /* Slate 800/80 */
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .channel-item.active {
+            background: linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(37,99,235,0) 100%);
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px;
+        }
+        .channel-item.active i {
+            color: #60a5fa; /* Blue 400 */
+            filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
+        }
+
+        /* TV Focus Logic */
+        .channel-item:focus {
+            outline: none;
+            background-color: rgba(251, 191, 36, 0.15); /* Amber Tint */
+            border: 1px solid var(--tv-focus-color);
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            z-index: 10;
+        }
+
+        /* Video Player Customization */
         .video-js .vjs-big-play-button {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(37, 99, 235, 0.9);
+            background: rgba(37, 99, 235, 0.9);
             border: none;
-            width: 2em;
-            height: 2em;
-            line-height: 2em;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            font-size: 4em; /* Bigger for Touch/TV */
-        }
-        .video-js .vjs-control-bar {
-            background-color: rgba(0, 0, 0, 0.8);
-            height: 4em; /* Taller controls for touch */
-        }
-        
-        /* Active Channel Style */
-        .channel-item.active {
-            background-color: #1d4ed8; /* Blue 700 */
-            border-left: 6px solid #60a5fa;
-        }
-
-        /* --- TV REMOTE FOCUS STYLES --- */
-        /* When using remote/keyboard, focused elements glow */
-        .channel-item:focus, button:focus, input:focus {
-            outline: 4px solid var(--tv-focus-color);
-            outline-offset: -2px;
-            background-color: #334155;
-            z-index: 10;
-        }
-        .channel-item:focus .text-slate-400 {
-            color: #fbbf24; /* Highlight subtext on focus */
+            line-height: 80px;
+            font-size: 2.5rem;
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col md:flex-row relative">
+<body class="h-screen w-screen flex relative bg-black">
 
-    <!-- Mobile Overlay (Blackout background when menu is open) -->
-    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/80 z-30 hidden md:hidden transition-opacity"></div>
+    <!-- Mobile Overlay with Fade -->
+    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-all duration-300 opacity-0"></div>
 
-    <!-- Sidebar (Channel List) 
-         Mobile: Hidden by default (off-canvas)
-         Desktop/TV: Always visible, wider
-    -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[80vw] bg-slate-900 border-r border-slate-800 z-40 transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static md:w-96 flex flex-col shadow-2xl">
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-slate-900/95 border-r border-slate-800/50 z-40 transform -translate-x-full flex flex-col shadow-2xl">
         
         <!-- Header -->
-        <div class="p-5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0">
             <div class="flex items-center gap-3">
-                <i class="ph ph-television-simple text-blue-500 text-3xl"></i>
-                <div>
-                    <h1 class="text-2xl font-bold text-white leading-none">IPTV</h1>
-                    <span class="text-xs text-slate-400">Web Player</span>
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                    <i class="ph-fill ph-play text-white text-lg"></i>
                 </div>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">IPTV PRO</span>
             </div>
-            <!-- Close Button (Mobile Only) -->
-            <button onclick="toggleMenu(false)" class="md:hidden p-2 text-slate-400 hover:text-white focus:text-white rounded-full">
-                <i class="ph ph-x text-2xl"></i>
+            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-slate-400 hover:text-white">
+                <i class="ph ph-x text-lg"></i>
             </button>
         </div>
 
-        <!-- Search (TV Friendly: Large Input) -->
+        <!-- Search Box -->
         <div class="p-4 shrink-0">
-            <div class="relative">
-                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"></i>
-                <input type="text" id="searchInput" placeholder="ค้นหา (Search)..." 
-                    class="w-full bg-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:bg-slate-700 text-lg shadow-inner transition-colors">
+            <div class="relative group">
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหาช่อง..." 
+                    class="w-full bg-slate-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-blue-500/50 focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm placeholder-slate-600">
             </div>
         </div>
 
-        <!-- Categories -->
-        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
-            <button class="px-4 py-2 text-sm font-bold bg-blue-600 text-white rounded-full whitespace-nowrap shadow-md focus:ring-2 ring-white">ทั้งหมด</button>
-            <button class="px-4 py-2 text-sm font-bold bg-slate-800 text-slate-300 rounded-full whitespace-nowrap shadow-md hover:bg-slate-700 focus:ring-2 ring-white">ข่าว</button>
-            <button class="px-4 py-2 text-sm font-bold bg-slate-800 text-slate-300 rounded-full whitespace-nowrap shadow-md hover:bg-slate-700 focus:ring-2 ring-white">หนัง</button>
+        <!-- Categories (Updated with Logic) -->
+        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right" id="categoryContainer">
+            <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
+            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">ข่าว</button>
+            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">กีฬา</button>
         </div>
 
-        <!-- Channel List (Scrollable) -->
-        <div class="flex-1 overflow-y-auto p-2 space-y-2" id="channelList" role="listbox">
-            <!-- Channels will be injected here -->
+        <!-- Channel List -->
+        <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar" id="channelList" role="listbox">
+            <!-- JS Rendered Items -->
         </div>
         
-        <div class="p-2 text-center text-xs text-slate-600 shrink-0">
-            กด Enter เพื่อเล่น • กดลูกศรเพื่อเลื่อน
+        <!-- Footer -->
+        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-slate-500 shrink-0">
+            v1.2.0 • กด Enter เพื่อเล่น
         </div>
     </div>
 
-    <!-- Main Content (Player Area) -->
-    <div class="flex-1 bg-black relative h-full flex flex-col justify-center items-center">
+    <!-- Main Area -->
+    <div class="flex-1 h-full relative bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Mobile Toggle Button (Floating) -->
-        <button onclick="toggleMenu(true)" class="absolute top-4 left-4 z-20 md:hidden bg-slate-900/80 backdrop-blur text-white p-3 rounded-full shadow-lg border border-slate-700">
-            <i class="ph ph-list text-2xl"></i>
+        <!-- Floating Menu Button -->
+        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-slate-900/50 hover:bg-slate-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+            <i class="ph ph-list text-2xl group-hover:text-blue-400 transition-colors"></i>
         </button>
 
-        <!-- Player Container -->
-        <div class="w-full h-full relative group">
+        <!-- Video Player -->
+        <div class="w-full h-full relative">
             <video
                 id="my-video"
                 class="video-js vjs-default-skin vjs-fluid h-full"
@@ -143,16 +152,18 @@
                 preload="auto"
                 playsinline 
                 crossorigin="anonymous"
-                poster="https://via.placeholder.com/1920x1080/0f172a/FFFFFF/?text=IPTV+Player"
+                poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"
             >
             </video>
 
-            <!-- Loading / Error Overlays handled by VideoJS or Custom logic below -->
-            <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 flex items-center justify-center flex-col text-center p-6">
-                <i class="ph ph-warning-circle text-red-500 text-6xl mb-4"></i>
-                <h3 class="text-2xl font-bold text-white">เล่นไม่ได้ (Error)</h3>
-                <p class="text-slate-300 text-lg mt-2">Format not supported or stream offline</p>
-                <button onclick="hideError(); toggleMenu(true);" class="mt-6 px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-lg transition focus:ring-2 ring-white">
+            <!-- Error Overlay -->
+            <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
+                <div class="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20">
+                    <i class="ph ph-warning-circle text-red-500 text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-white mb-2">สัญญาณขัดข้อง</h3>
+                <p class="text-slate-400 text-sm mb-6">ไม่สามารถเล่นไฟล์นี้ได้ในขณะนี้</p>
+                <button onclick="hideError(); toggleMenu(true);" class="px-6 py-2.5 bg-white text-black rounded-full text-sm font-medium hover:bg-slate-200 transition shadow-lg hover:scale-105">
                     เลือกช่องอื่น
                 </button>
             </div>
@@ -163,148 +174,178 @@
     <script>
         // --- Data ---
         const channels = [
-            { id: 1, name: "Test Stream 1 (Mux)", category: "Variety", logo: "ph-film-strip", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-            { id: 2, name: "Test Stream 2 (Akamai)", category: "News", logo: "ph-newspaper", url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1725854&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjEvMjAyNSA2OjEzOjI0IFBNJmhhc2hfdmFsdWU9MTVIQVJZVnhpbTRDTzFtQnJibDFVQT09JnZhbGlkbWludXRlcz0y" },
-            { id: 3, name: "Test Stream 3 (Sintel)", category: "Movie", logo: "ph-video-camera", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" },
-            { id: 4, name: "Broken Link Test", category: "Test", logo: "ph-warning", url: "https://example.com/bad.m3u8" }
+            { id: 1, name: "Thai PBS (Demo)", category: "News", logo: "ph-newspaper", url: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8" },
+            { id: 4, name: "Live Sport (Test)", category: "Sport", logo: "ph-soccer-ball", url: "https://example.com/bad.m3u8" }, 
         ];
 
         let player;
+        let currentCategory = 'All'; // Default filter
+        
         const sidebar = document.getElementById('sidebar');
         const mobileOverlay = document.getElementById('mobileOverlay');
         const channelListEl = document.getElementById('channelList');
         const errorOverlay = document.getElementById('errorOverlay');
+        const searchInput = document.getElementById('searchInput');
 
-        // --- Functions ---
+        // --- Category Logic ---
+        window.selectCategory = (category, btnElement) => {
+            currentCategory = category;
+            
+            // Update UI: Reset all buttons
+            const buttons = document.querySelectorAll('.category-btn');
+            const activeClasses = "active bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500".split(" ");
+            const inactiveClasses = "bg-slate-800/80 text-slate-400 border border-white/5 hover:bg-slate-700 hover:text-white".split(" ");
 
+            buttons.forEach(btn => {
+                // Remove Active, Add Inactive
+                btn.classList.remove(...activeClasses);
+                btn.classList.add(...inactiveClasses);
+            });
+
+            // Activate clicked button
+            if(btnElement) {
+                btnElement.classList.remove(...inactiveClasses);
+                btnElement.classList.add(...activeClasses);
+            }
+
+            // Re-render list
+            renderChannels(searchInput.value);
+        }
+
+        // --- Functionality ---
         function toggleMenu(show) {
             if (show) {
                 sidebar.classList.remove('-translate-x-full');
                 mobileOverlay.classList.remove('hidden');
-                // Focus search input when menu opens for ease of use
-                setTimeout(() => document.getElementById('searchInput').focus(), 300);
+                setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
+                setTimeout(() => searchInput.focus(), 300);
             } else {
                 sidebar.classList.add('-translate-x-full');
-                mobileOverlay.classList.add('hidden');
+                mobileOverlay.classList.add('opacity-0');
+                setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
             }
         }
 
         window.hideError = () => errorOverlay.classList.add('hidden');
 
-        window.playChannel = (index) => {
+        window.playChannel = (index, autoPlay = false) => {
             hideError();
             const channel = channels[index];
             
-            // UI Updates
+            // Update Active Channel UI
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
             const selectedEl = document.getElementById(`chan-${channel.id}`);
             if(selectedEl) {
                 selectedEl.classList.add('active');
-                // Scroll into view if off-screen
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // On Mobile/Small screens: Close menu after selection
-            if (window.innerWidth < 768) {
-                toggleMenu(false);
-            }
-
-            console.log("Playing:", channel.name);
+            toggleMenu(false);
+            console.log(`Loading: ${channel.name}`);
             
             player.src({
                 src: channel.url,
                 type: 'application/x-mpegURL'
             });
-            
-            player.play().catch(e => console.warn("Autoplay prevented:", e));
-            
-            // Focus back to player so remote can control volume/pause
-            // setTimeout(() => document.querySelector('.vjs-tech').focus(), 500);
+
+            if (autoPlay) {
+                player.muted(true);
+                player.play().catch(e => console.log("Autoplay blocked"));
+            } else {
+                player.play().catch(e => console.log("Manual play required"));
+            }
         };
 
-        function renderChannels(filter = "") {
+        function renderChannels(filterText = "") {
             channelListEl.innerHTML = "";
-            const filtered = channels.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+            
+            // Filter Logic: Search AND Category
+            const filtered = channels.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(filterText.toLowerCase());
+                const matchesCategory = currentCategory === 'All' || c.category === currentCategory;
+                return matchesSearch && matchesCategory;
+            });
 
             if (filtered.length === 0) {
-                channelListEl.innerHTML = `<div class="text-center py-10 text-slate-500">ไม่พบช่อง</div>`;
+                channelListEl.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-slate-600 opacity-50">
+                        <i class="ph ph-ghost text-3xl mb-2"></i>
+                        <span class="text-xs">ไม่พบช่องรายการ</span>
+                    </div>`;
                 return;
             }
 
             filtered.forEach((channel, index) => {
+                // Use original index to play correct channel
                 const realIndex = channels.indexOf(channel);
-                const btn = document.createElement('div'); // Using div with tabindex for better control
+                const btn = document.createElement('div'); 
                 btn.id = `chan-${channel.id}`;
-                // tabindex="0" makes it focusable via Tab/Arrows
                 btn.setAttribute('tabindex', '0'); 
-                btn.className = `channel-item p-4 rounded-xl cursor-pointer bg-slate-800/50 hover:bg-slate-700 transition-all flex items-center gap-4 border border-transparent`;
+                
+                btn.className = `channel-item group relative p-3 mb-1 rounded-lg cursor-pointer flex items-center gap-3 border-l-2 border-transparent hover:bg-white/5 outline-none overflow-hidden`;
                 
                 btn.innerHTML = `
-                    <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 text-2xl shrink-0 shadow-inner">
-                        <i class="ph ${channel.logo}"></i>
+                    <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                        <i class="ph ${channel.logo} text-slate-400 group-hover:text-white text-lg transition-colors"></i>
                     </div>
-                    <div class="flex-1 min-w-0 text-left">
-                        <h3 class="text-lg font-medium text-white truncate leading-tight">${channel.name}</h3>
-                        <p class="text-sm text-slate-400 truncate mt-1">${channel.category}</p>
+                    <div class="flex-1 min-w-0 z-10">
+                        <h3 class="text-sm font-medium text-slate-200 group-hover:text-white truncate transition-colors">${channel.name}</h3>
+                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 truncate">${channel.category}</p>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <i class="ph-fill ph-play-circle text-blue-500 text-xl shadow-lg shadow-blue-500/50 rounded-full"></i>
                     </div>
                 `;
 
-                // Mouse Click
                 btn.onclick = () => playChannel(realIndex);
                 
-                // Keyboard/Remote Enter Key
                 btn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        playChannel(realIndex);
-                    }
-                    // Arrow Navigation Logic handled globally or by browser default behavior for flex items?
-                    // Browser default works for Tab, but for Arrows in a list, we usually need custom logic.
-                    // Let's rely on browser default tab-navigation for now, but add arrow support helper below.
+                    if (e.key === 'Enter') playChannel(realIndex);
                 });
 
                 channelListEl.appendChild(btn);
             });
         }
 
-        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             player = videojs('my-video', {
                 fluid: true,
-                html5: {
-                    vhs: { overrideNative: true }
+                html5: { vhs: { overrideNative: true } },
+                controlBar: {
+                    children: [
+                        'playToggle', 'volumePanel', 'currentTimeDisplay', 
+                        'timeDivider', 'durationDisplay', 'progressControl', 'fullscreenToggle'
+                    ]
                 }
             });
 
-            player.on('error', () => {
-                errorOverlay.classList.remove('hidden');
-            });
+            player.on('error', () => errorOverlay.classList.remove('hidden'));
 
-            // Search Logic
-            document.getElementById('searchInput').addEventListener('input', (e) => renderChannels(e.target.value));
+            searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
 
-            // Initial Render
-            renderChannels();
+            renderChannels(); // Initial Render
 
-            // --- TV Remote / Keyboard Navigation Helper ---
-            // This adds simpler Up/Down navigation for the channel list
+            // TV Remote / Keyboard Navigation
             document.addEventListener('keydown', (e) => {
-                const activeElement = document.activeElement;
-                const isChannelItem = activeElement.classList.contains('channel-item');
-
-                if (e.key === 'ArrowDown' && isChannelItem) {
-                    e.preventDefault(); // Prevent scrolling whole page
-                    const next = activeElement.nextElementSibling;
-                    if (next) next.focus();
-                } else if (e.key === 'ArrowUp' && isChannelItem) {
-                    e.preventDefault();
-                    const prev = activeElement.previousElementSibling;
-                    if (prev) prev.focus();
-                } else if (e.key === 'ArrowRight' && isChannelItem) {
-                    // Maybe move focus to player?
+                const active = document.activeElement;
+                if (active.classList.contains('channel-item')) {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        const next = active.nextElementSibling;
+                        if (next) next.focus();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        const prev = active.previousElementSibling;
+                        if (prev) prev.focus();
+                    }
                 }
             });
-        });
 
+            // Auto Play
+            setTimeout(() => {
+                if(channels.length > 0) playChannel(0, true);
+            }, 800);
+        });
     </script>
 </body>
 </html>
