@@ -14,9 +14,11 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <style>
+   <style>
         :root {
-            --tv-focus-color: #fbbf24; /* Amber 400 */
+            /* เปลี่ยนสี Focus หลักจากสีเหลืองอำพัน เป็นสีเทาสว่าง */
+            /* --tv-focus-color: #fbbf24; OLD Amber */
+            --tv-focus-color: #e5e7eb; /* NEW Light Grey */
         }
         body {
             font-family: 'Kanit', sans-serif;
@@ -24,7 +26,7 @@
             color: white;
             overflow: hidden;
         }
-        
+       
         /* Hide Scrollbar but allow scroll */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -48,26 +50,39 @@
         }
         .channel-item:hover {
             transform: translateX(4px);
-            background-color: rgba(30, 41, 59, 0.8); /* Slate 800/80 */
+            /* เปลี่ยนพื้นหลังตอน Hover เป็นสีเทาเข้ม */
+            /* background-color: rgba(30, 41, 59, 0.8); OLD Slate Blue */
+            background-color: rgba(75, 85, 99, 0.8); /* NEW Dark Grey */
             border-color: rgba(255, 255, 255, 0.1);
         }
         .channel-item.active {
-            background: linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(37,99,235,0) 100%);
-            border-left: 4px solid #3b82f6;
+            /* เปลี่ยน Gradient ตอน Active เป็นสีเทา */
+            /* background: linear-gradient(90deg, rgba(37,99,235,0.2) 0%, rgba(37,99,235,0) 100%); OLD Blue Grad */
+            background: linear-gradient(90deg, rgba(156, 163, 175, 0.3) 0%, rgba(156, 163, 175, 0) 100%); /* NEW Grey Grad */
+            /* เปลี่ยนขอบซ้ายเป็นสีเทา */
+            /* border-left: 4px solid #3b82f6; OLD Blue Border */
+            border-left: 4px solid #9ca3af; /* NEW Grey Border */
             border-radius: 4px;
         }
         .channel-item.active i {
-            color: #60a5fa; /* Blue 400 */
-            filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
+            /* เปลี่ยนไอคอนตอน Active เป็นสีขาว/เทาสว่าง และเงาสีเทา */
+            /* color: #60a5fa; OLD Light Blue */
+            color: #f3f4f6; /* NEW Whitish Grey */
+            /* filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5)); OLD Blue Shadow */
+            filter: drop-shadow(0 0 8px rgba(229, 231, 235, 0.6)); /* NEW Light Grey Shadow */
         }
 
         /* TV Focus Logic */
         .channel-item:focus {
             outline: none;
-            background-color: rgba(251, 191, 36, 0.15); /* Amber Tint */
+            /* เปลี่ยนพื้นหลังตอน Focus เป็นสีขาวจางๆ */
+            /* background-color: rgba(251, 191, 36, 0.15); OLD Amber Tint */
+            background-color: rgba(255, 255, 255, 0.15); /* NEW White Tint */
             border: 1px solid var(--tv-focus-color);
             transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            /* เปลี่ยนเงาตอน Focus เป็นสีเทาสว่าง */
+            /* box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); OLD Amber Shadow */
+            box-shadow: 0 0 15px rgba(229, 231, 235, 0.4); /* NEW Light Grey Shadow */
             z-index: 10;
         }
 
@@ -76,7 +91,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(37, 99, 235, 0.9);
+            /* เปลี่ยนปุ่ม Play ใหญ่ตรงกลางเป็นสีเทา */
+            /* background: rgba(37, 99, 235, 0.9); OLD Blue */
+            background: rgba(107, 114, 128, 0.9); /* NEW Medium Grey */
             border: none;
             width: 80px;
             height: 80px;
@@ -97,7 +114,7 @@
             bottom: 0;
             z-index: 20; /* Ensure it is on top */
         }
-        
+       
         /* Hide controls when inactive (optional, videojs handles this, but we ensure smoothness) */
         .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar {
             opacity: 0;
@@ -362,7 +379,7 @@
             });
 
             // --- Auto Play Config ---
-            const defaultId = 1; 
+            const defaultId = 4; 
             
             setTimeout(() => {
                 const index = channels.findIndex(c => c.id === defaultId);
