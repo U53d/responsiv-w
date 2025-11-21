@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simple Web IPTV Player</title>
+    
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --tv-focus-color: #fbbf24; /* Amber 400 for TV Focus */
+        }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #000;
+            color: white;
+            overflow: hidden; /* Prevent scroll on body */
+        }
+        
+        /* Custom Scrollbar (Hidden for cleaner TV look but scrollable) */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 2px;
+        }
+
+        /* Video JS Customization */
+        .video-js .vjs-big-play-button {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(37, 99, 235, 0.9);
+            border: none;
+            width: 2em;
+            height: 2em;
+            line-height: 2em;
+            border-radius: 50%;
+            font-size: 4em; /* Bigger for Touch/TV */
+        }
+        .video-js .vjs-control-bar {
+            background-color: rgba(0, 0, 0, 0.8);
+            height: 4em; /* Taller controls for touch */
+        }
+        
+        /* Active Channel Style */
+        .channel-item.active {
+            background-color: #1d4ed8; /* Blue 700 */
+            border-left: 6px solid #60a5fa;
+        }
+
+        /* --- TV REMOTE FOCUS STYLES --- */
+        /* When using remote/keyboard, focused elements glow */
+        .channel-item:focus, button:focus, input:focus {
+            outline: 4px solid var(--tv-focus-color);
+            outline-offset: -2px;
+            background-color: #334155;
+            z-index: 10;
+        }
+        .channel-item:focus .text-slate-400 {
+            color: #fbbf24; /* Highlight subtext on focus */
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col md:flex-row relative">
+
+    <!-- Mobile Overlay (Blackout background when menu is open) -->
+    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/80 z-30 hidden md:hidden transition-opacity"></div>
+
+    <!-- Sidebar (Channel List) 
+         Mobile: Hidden by default (off-canvas)
+         Desktop/TV: Always visible, wider
+    -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[80vw] bg-slate-900 border-r border-slate-800 z-40 transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static md:w-96 flex flex-col shadow-2xl">
+        
+        <!-- Header -->
+        <div class="p-5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <i class="ph ph-television-simple text-blue-500 text-3xl"></i>
+                <div>
+                    <h1 class="text-2xl font-bold text-white leading-none">IPTV</h1>
+                    <span class="text-xs text-slate-400">Web Player</span>
+                </div>
+            </div>
+            <!-- Close Button (Mobile Only) -->
+            <button onclick="toggleMenu(false)" class="md:hidden p-2 text-slate-400 hover:text-white focus:text-white rounded-full">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Search (TV Friendly: Large Input) -->
+        <div class="p-4 shrink-0">
+            <div class="relative">
+                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหา (Search)..." 
+                    class="w-full bg-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:bg-slate-700 text-lg shadow-inner transition-colors">
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0">
+            <button class="px-4 py-2 text-sm font-bold bg-blue-600 text-white rounded-full whitespace-nowrap shadow-md focus:ring-2 ring-white">ทั้งหมด</button>
+            <button class="px-4 py-2 text-sm font-bold bg-slate-800 text-slate-300 rounded-full whitespace-nowrap shadow-md hover:bg-slate-700 focus:ring-2 ring-white">ข่าว</button>
+            <button class="px-4 py-2 text-sm font-bold bg-slate-800 text-slate-300 rounded-full whitespace-nowrap shadow-md hover:bg-slate-700 focus:ring-2 ring-white">หนัง</button>
+        </div>
+
+        <!-- Channel List (Scrollable) -->
+        <div class="flex-1 overflow-y-auto p-2 space-y-2" id="channelList" role="listbox">
+            <!-- Channels will be injected here -->
+        </div>
+        
+        <div class="p-2 text-center text-xs text-slate-600 shrink-0">
+            กด Enter เพื่อเล่น • กดลูกศรเพื่อเลื่อน
+        </div>
+    </div>
+
+    <!-- Main Content (Player Area) -->
+    <div class="flex-1 bg-black relative h-full flex flex-col justify-center items-center">
+        
+        <!-- Mobile Toggle Button (Floating) -->
+        <button onclick="toggleMenu(true)" class="absolute top-4 left-4 z-20 md:hidden bg-slate-900/80 backdrop-blur text-white p-3 rounded-full shadow-lg border border-slate-700">
+            <i class="ph ph-list text-2xl"></i>
+        </button>
+
+        <!-- Player Container -->
+        <div class="w-full h-full relative group">
+            <video
+                id="my-video"
+                class="video-js vjs-default-skin vjs-fluid h-full"
+                controls
+                preload="auto"
+                playsinline 
+                crossorigin="anonymous"
+                poster="https://via.placeholder.com/1920x1080/0f172a/FFFFFF/?text=IPTV+Player"
+            >
+            </video>
+
+            <!-- Loading / Error Overlays handled by VideoJS or Custom logic below -->
+            <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 flex items-center justify-center flex-col text-center p-6">
+                <i class="ph ph-warning-circle text-red-500 text-6xl mb-4"></i>
+                <h3 class="text-2xl font-bold text-white">เล่นไม่ได้ (Error)</h3>
+                <p class="text-slate-300 text-lg mt-2">Format not supported or stream offline</p>
+                <button onclick="hideError(); toggleMenu(true);" class="mt-6 px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-lg transition focus:ring-2 ring-white">
+                    เลือกช่องอื่น
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script>
+        // --- Data ---
+        const channels = [
+            { id: 1, name: "Test Stream 1 (Mux)", category: "Variety", logo: "ph-film-strip", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+            { id: 2, name: "Test Stream 2 (Akamai)", category: "News", logo: "ph-newspaper", url: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8" },
+            { id: 3, name: "Test Stream 3 (Sintel)", category: "Movie", logo: "ph-video-camera", url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8" },
+            { id: 4, name: "Broken Link Test", category: "Test", logo: "ph-warning", url: "https://example.com/bad.m3u8" }
+        ];
+
+        let player;
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const channelListEl = document.getElementById('channelList');
+        const errorOverlay = document.getElementById('errorOverlay');
+
+        // --- Functions ---
+
+        function toggleMenu(show) {
+            if (show) {
+                sidebar.classList.remove('-translate-x-full');
+                mobileOverlay.classList.remove('hidden');
+                // Focus search input when menu opens for ease of use
+                setTimeout(() => document.getElementById('searchInput').focus(), 300);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                mobileOverlay.classList.add('hidden');
+            }
+        }
+
+        window.hideError = () => errorOverlay.classList.add('hidden');
+
+        window.playChannel = (index) => {
+            hideError();
+            const channel = channels[index];
+            
+            // UI Updates
+            document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+            const selectedEl = document.getElementById(`chan-${channel.id}`);
+            if(selectedEl) {
+                selectedEl.classList.add('active');
+                // Scroll into view if off-screen
+                selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // On Mobile/Small screens: Close menu after selection
+            if (window.innerWidth < 768) {
+                toggleMenu(false);
+            }
+
+            console.log("Playing:", channel.name);
+            
+            player.src({
+                src: channel.url,
+                type: 'application/x-mpegURL'
+            });
+            
+            player.play().catch(e => console.warn("Autoplay prevented:", e));
+            
+            // Focus back to player so remote can control volume/pause
+            // setTimeout(() => document.querySelector('.vjs-tech').focus(), 500);
+        };
+
+        function renderChannels(filter = "") {
+            channelListEl.innerHTML = "";
+            const filtered = channels.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+            if (filtered.length === 0) {
+                channelListEl.innerHTML = `<div class="text-center py-10 text-slate-500">ไม่พบช่อง</div>`;
+                return;
+            }
+
+            filtered.forEach((channel, index) => {
+                const realIndex = channels.indexOf(channel);
+                const btn = document.createElement('div'); // Using div with tabindex for better control
+                btn.id = `chan-${channel.id}`;
+                // tabindex="0" makes it focusable via Tab/Arrows
+                btn.setAttribute('tabindex', '0'); 
+                btn.className = `channel-item p-4 rounded-xl cursor-pointer bg-slate-800/50 hover:bg-slate-700 transition-all flex items-center gap-4 border border-transparent`;
+                
+                btn.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 text-2xl shrink-0 shadow-inner">
+                        <i class="ph ${channel.logo}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0 text-left">
+                        <h3 class="text-lg font-medium text-white truncate leading-tight">${channel.name}</h3>
+                        <p class="text-sm text-slate-400 truncate mt-1">${channel.category}</p>
+                    </div>
+                `;
+
+                // Mouse Click
+                btn.onclick = () => playChannel(realIndex);
+                
+                // Keyboard/Remote Enter Key
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        playChannel(realIndex);
+                    }
+                    // Arrow Navigation Logic handled globally or by browser default behavior for flex items?
+                    // Browser default works for Tab, but for Arrows in a list, we usually need custom logic.
+                    // Let's rely on browser default tab-navigation for now, but add arrow support helper below.
+                });
+
+                channelListEl.appendChild(btn);
+            });
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            player = videojs('my-video', {
+                fluid: true,
+                html5: {
+                    vhs: { overrideNative: true }
+                }
+            });
+
+            player.on('error', () => {
+                errorOverlay.classList.remove('hidden');
+            });
+
+            // Search Logic
+            document.getElementById('searchInput').addEventListener('input', (e) => renderChannels(e.target.value));
+
+            // Initial Render
+            renderChannels();
+
+            // --- TV Remote / Keyboard Navigation Helper ---
+            // This adds simpler Up/Down navigation for the channel list
+            document.addEventListener('keydown', (e) => {
+                const activeElement = document.activeElement;
+                const isChannelItem = activeElement.classList.contains('channel-item');
+
+                if (e.key === 'ArrowDown' && isChannelItem) {
+                    e.preventDefault(); // Prevent scrolling whole page
+                    const next = activeElement.nextElementSibling;
+                    if (next) next.focus();
+                } else if (e.key === 'ArrowUp' && isChannelItem) {
+                    e.preventDefault();
+                    const prev = activeElement.previousElementSibling;
+                    if (prev) prev.focus();
+                } else if (e.key === 'ArrowRight' && isChannelItem) {
+                    // Maybe move focus to player?
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
