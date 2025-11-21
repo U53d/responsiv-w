@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>respw</title>
+    <title>IPTV Player - Grey Theme</title>
     
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
@@ -110,26 +110,34 @@
             background-color: rgba(255,255,255,0.2);
         }
 
-        /* Control Bar Visibility - FIX FOR MOBILE */
+        /* --- FIXED: MOBILE CONTROL BAR FORCE SHOW --- */
+        /* Default Desktop Style */
         .video-js .vjs-control-bar {
             background-color: rgba(0, 0, 0, 0.85);
             height: 3.5em;
-            display: flex !important; /* Force flex display */
+            display: flex;
             visibility: visible;
             opacity: 1;
             transition: opacity 0.3s;
             bottom: 0;
-            z-index: 20;
+            z-index: 999 !important; /* Force on top */
         }
         
-        /* Only hide controls when strictly inactive and playing */
+        /* Hide on desktop when inactive */
         .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar {
             opacity: 0;
         }
 
-        /* Mobile Specific Fixes */
-        .video-js.vjs-touch-enabled .vjs-control-bar {
-            display: flex !important;
+        /* MOBILE FORCE VISIBLE: บังคับแสดงตลอดเวลาบนมือถือ */
+        @media (max-width: 1024px) {
+            .video-js .vjs-control-bar,
+            .video-js.vjs-user-inactive.vjs-playing .vjs-control-bar,
+            .video-js.vjs-touch-enabled .vjs-control-bar {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
         }
     </style>
 </head>
@@ -180,7 +188,7 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
-            v1.2.0 • กด Enter เพื่อเล่น
+            v1.2.0 (Grey Edition) • กด Enter เพื่อเล่น
         </div>
     </div>
 
@@ -386,7 +394,6 @@
                     vhs: { overrideNative: true },
                     nativeAudioTracks: false,
                     nativeVideoTracks: false,
-                    // สำคัญสำหรับมือถือ: ปิด Native Controls
                     nativeControlsForTouch: false 
                 },
                 controlBar: {
