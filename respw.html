@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>-</title>
     
-    <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
@@ -48,7 +44,7 @@
         }
         .channel-item:hover {
             transform: translateX(4px);
-            background-color: rgba(30, 41, 59, 0.8); /* Slate 800/80 */
+            background-color: rgba(55, 65, 81, 0.8); /* Gray 700/80 */
             border-color: rgba(255, 255, 255, 0.1);
         }
         .channel-item.active {
@@ -106,61 +102,50 @@
 </head>
 <body class="h-screen w-screen flex relative bg-black">
 
-    <!-- Mobile Overlay with Fade -->
     <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-all duration-300 opacity-0"></div>
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-slate-900/95 border-r border-slate-800/50 z-40 transform -translate-x-full flex flex-col shadow-2xl">
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-gray-900/95 border-r border-gray-800/50 z-40 transform -translate-x-full flex flex-col shadow-2xl">
         
-        <!-- Header -->
         <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
                     <i class="ph-fill ph-play text-white text-lg"></i>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">-</span>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">-</span>
             </div>
-            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-slate-400 hover:text-white">
+            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
         </div>
 
-        <!-- Search Box -->
         <div class="p-4 shrink-0">
             <div class="relative group">
-                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
                 <input type="text" id="searchInput" placeholder="ค้นหาช่อง..." 
-                    class="w-full bg-slate-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-blue-500/50 focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm placeholder-slate-600">
+                    class="w-full bg-gray-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-blue-500/50 focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm placeholder-gray-600">
             </div>
         </div>
 
-        <!-- Categories -->
         <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right" id="categoryContainer">
-              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
-            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">ข่าว</button>
-            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-400 border border-white/5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">กีฬา</button>
+            <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition-colors">ทั้งหมด</button>
+            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-gray-800/80 text-gray-400 border border-white/5 rounded-lg hover:bg-gray-700 hover:text-white transition-all">ข่าว</button>
+            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-gray-800/80 text-gray-400 border border-white/5 rounded-lg hover:bg-gray-700 hover:text-white transition-all">กีฬา</button>
         </div>
 
-        <!-- Channel List -->
         <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar" id="channelList" role="listbox">
-            <!-- JS Rendered Items -->
-        </div>
+            </div>
         
-        <!-- Footer -->
-        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-slate-500 shrink-0">
+        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
             v1.2.0 • กด Enter เพื่อเล่น
         </div>
     </div>
 
-    <!-- Main Area -->
     <div class="flex-1 h-full relative bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Floating Menu Button -->
-        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-slate-900/50 hover:bg-slate-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-gray-900/50 hover:bg-gray-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-blue-400 transition-colors"></i>
         </button>
 
-        <!-- Video Player -->
         <div class="w-full h-full relative">
             <video
                 id="my-video"
@@ -173,7 +158,6 @@
             >
             </video>
 
-            <!-- Error Overlay -->
             <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
                 <div class="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20">
                     <i class="ph ph-warning-circle text-red-500 text-4xl"></i>
@@ -211,7 +195,9 @@
             // Update UI: Reset all buttons
             const buttons = document.querySelectorAll('.category-btn');
             const activeClasses = "active bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500".split(" ");
-            const inactiveClasses = "bg-slate-800/80 text-slate-400 border border-white/5 hover:bg-slate-700 hover:text-white".split(" ");
+            
+            // EDITED: Changed inactive classes to gray-800/80
+            const inactiveClasses = "bg-gray-800/80 text-gray-400 border border-white/5 hover:bg-gray-700 hover:text-white".split(" ");
 
             buttons.forEach(btn => {
                 // Remove Active, Add Inactive
@@ -235,9 +221,6 @@
                 sidebar.classList.remove('-translate-x-full');
                 mobileOverlay.classList.remove('hidden');
                 setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
-                
-                // REMOVED: setTimeout(() => searchInput.focus(), 300); 
-                // เอาออกแล้วครับ คีย์บอร์ดจะไม่เด้งขึ้นมาบังหน้าจอ
             } else {
                 sidebar.classList.add('-translate-x-full');
                 mobileOverlay.classList.add('opacity-0');
@@ -287,7 +270,7 @@
 
             if (filtered.length === 0) {
                 channelListEl.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-slate-600 opacity-50">
+                    <div class="flex flex-col items-center justify-center py-12 text-gray-600 opacity-50">
                         <i class="ph ph-ghost text-3xl mb-2"></i>
                         <span class="text-xs">ไม่พบช่องรายการ</span>
                     </div>`;
@@ -301,15 +284,16 @@
                 btn.id = `chan-${channel.id}`;
                 btn.setAttribute('tabindex', '0'); 
                 
+                // EDITED: Changed hover bg to white/5 (universal)
                 btn.className = `channel-item group relative p-3 mb-1 rounded-lg cursor-pointer flex items-center gap-3 border-l-2 border-transparent hover:bg-white/5 outline-none overflow-hidden`;
                 
                 btn.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                        <i class="ph ${channel.logo} text-slate-400 group-hover:text-white text-lg transition-colors"></i>
+                    <div class="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                        <i class="ph ${channel.logo} text-gray-400 group-hover:text-white text-lg transition-colors"></i>
                     </div>
                     <div class="flex-1 min-w-0 z-10">
-                        <h3 class="text-sm font-medium text-slate-200 group-hover:text-white truncate transition-colors">${channel.name}</h3>
-                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 truncate">${channel.category}</p>
+                        <h3 class="text-sm font-medium text-gray-200 group-hover:text-white truncate transition-colors">${channel.name}</h3>
+                        <p class="text-[10px] text-gray-500 group-hover:text-gray-400 truncate">${channel.category}</p>
                     </div>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <i class="ph-fill ph-play-circle text-blue-500 text-xl shadow-lg shadow-blue-500/50 rounded-full"></i>
@@ -328,7 +312,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             player = videojs('my-video', {
-                // CHANGED: Use fill instead of fluid for desktop layout consistency
                 fill: true, 
                 html5: { vhs: { overrideNative: true } },
                 controlBar: {
