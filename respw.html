@@ -22,7 +22,7 @@
             font-family: 'Kanit', sans-serif;
             background-color: #000;
             color: white;
-            overflow: hidden;
+            overflow: hidden; /* ป้องกัน Scrollbar ของหน้าเว็บ */
         }
         
         .no-scrollbar::-webkit-scrollbar {
@@ -33,8 +33,9 @@
             scrollbar-width: none;
         }
 
+        /* Sidebar Transition */
         #sidebar {
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -71,22 +72,29 @@
             z-index: 10;
         }
 
-        /* Custom CSS for Native Video Element to center it nicely */
+        /* Video Styling */
         video {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* รักษาอัตราส่วนภาพ */
+            max-height: 100vh;
+            object-fit: contain; /* รักษาสัดส่วนภาพ */
             outline: none;
         }
     </style>
 </head>
-<body class="h-screen w-screen flex relative bg-black">
 
-    <!-- Mobile Overlay -->
-    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-all duration-300 opacity-0"></div>
+<!-- Main Layout: Flex Row เพื่อแบ่งซ้ายขวาบน Desktop -->
+<body class="h-screen w-screen flex flex-row bg-black">
+
+    <!-- Mobile Overlay (บังแสงเมื่อเปิดเมนูบนมือถือ) -->
+    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 z-40 transform -translate-x-full flex flex-col shadow-2xl">
+    <!-- 
+         Mobile: fixed, z-50, ซ่อนด้วย -translate-x-full
+         Desktop (lg): relative (อยู่ใน Flow), โชว์ตลอด (translate-x-0), ปรับความกว้างเป็น w-72
+    -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 lg:relative lg:shadow-none flex flex-col shadow-2xl shrink-0">
         
         <!-- Header -->
         <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0">
@@ -96,7 +104,8 @@
                 </div>
                 <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">IPTV</span>
             </div>
-            <button onclick="toggleMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
+            <!-- Close Button: ซ่อนบน Desktop -->
+            <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
         </div>
@@ -124,21 +133,21 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
-            v1.2.0 • กด Enter เพื่อเล่น
+            v1.3.0 • กด Enter เพื่อเล่น
         </div>
     </div>
 
-    <!-- Main Area -->
-    <div class="flex-1 h-full relative bg-black flex flex-col justify-center items-center overflow-hidden">
+    <!-- Main Content Area -->
+    <!-- flex-1: ขยายเต็มพื้นที่ที่เหลือ, min-w-0: ป้องกัน Flexbox ล้นจอ -->
+    <div class="flex-1 relative h-full min-w-0 bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Floating Menu Button -->
-        <button onclick="toggleMenu(true)" class="absolute top-5 left-5 z-20 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+        <!-- Floating Menu Button: ซ่อนบน Desktop (lg:hidden) -->
+        <button onclick="toggleMenu(true)" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
         </button>
 
-        <!-- Native Video Player Container -->
+        <!-- Video Player Container -->
         <div class="w-full h-full relative bg-black flex items-center justify-center">
-            <!-- Standard HTML5 Video Tag: This ensures mobile controls work perfectly -->
             <video id="videoPlayer" controls autoplay playsinline poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"></video>
 
             <!-- Error Overlay -->
@@ -160,7 +169,7 @@
         const channels = [
             { 
                 id: 1, 
-                name: "PPTV", 
+                name: "Mono29", 
                 category: "News", 
                 logo: "ph-newspaper", 
                 logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png",
@@ -207,14 +216,17 @@
 
         // --- Functionality ---
         function toggleMenu(show) {
-            if (show) {
-                sidebar.classList.remove('-translate-x-full');
-                mobileOverlay.classList.remove('hidden');
-                setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                mobileOverlay.classList.add('opacity-0');
-                setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+            // Only toggle on mobile screens (<1024px)
+            if (window.innerWidth < 1024) {
+                if (show) {
+                    sidebar.classList.remove('-translate-x-full');
+                    mobileOverlay.classList.remove('hidden');
+                    setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    mobileOverlay.classList.add('opacity-0');
+                    setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+                }
             }
         }
 
@@ -233,10 +245,13 @@
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            toggleMenu(false);
+            // Mobile: Close menu. Desktop: Keep open.
+            if (window.innerWidth < 1024) {
+                toggleMenu(false);
+            }
+            
             console.log(`Loading: ${channel.name}`);
 
-            // HLS Logic
             if (Hls.isSupported()) {
                 if (hls) {
                     hls.destroy();
@@ -251,15 +266,12 @@
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log("fatal network error encountered, try to recover");
                                 hls.startLoad();
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.log("fatal media error encountered, try to recover");
                                 hls.recoverMediaError();
                                 break;
                             default:
-                                console.log("cannot recover");
                                 hls.destroy();
                                 errorOverlay.classList.remove('hidden');
                                 break;
@@ -267,7 +279,6 @@
                     }
                 });
             }
-            // For Safari / iOS (Native HLS Support)
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = channel.url;
                 video.addEventListener('loadedmetadata', function() {
@@ -339,7 +350,6 @@
             searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
             renderChannels(); 
 
-            // Keyboard Navigation
             document.addEventListener('keydown', (e) => {
                 const active = document.activeElement;
                 if (active.classList.contains('channel-item')) {
