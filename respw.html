@@ -22,7 +22,7 @@
             font-family: 'Kanit', sans-serif;
             background-color: #000;
             color: white;
-            overflow: hidden; /* ป้องกัน Scrollbar ของหน้าเว็บ */
+            overflow: hidden;
         }
         
         .no-scrollbar::-webkit-scrollbar {
@@ -35,9 +35,20 @@
 
         /* Sidebar Transition */
         #sidebar {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Changed to all for smooth width transition */
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Desktop Collapsed State */
+        @media (min-width: 1024px) {
+            .sidebar-collapsed {
+                width: 0 !important;
+                border-right: none !important;
+                opacity: 0;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
         }
 
         .channel-item {
@@ -72,42 +83,40 @@
             z-index: 10;
         }
 
-        /* Video Styling */
         video {
             width: 100%;
             height: 100%;
             max-height: 100vh;
-            object-fit: contain; /* รักษาสัดส่วนภาพ */
+            object-fit: contain;
             outline: none;
         }
     </style>
 </head>
 
-<!-- Main Layout: Flex Row เพื่อแบ่งซ้ายขวาบน Desktop -->
 <body class="h-screen w-screen flex flex-row bg-black">
 
-    <!-- Mobile Overlay (บังแสงเมื่อเปิดเมนูบนมือถือ) -->
+    <!-- Mobile Overlay -->
     <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 lg:relative lg:shadow-none flex flex-col shadow-2xl shrink-0">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 lg:relative lg:shadow-none flex flex-col shadow-2xl shrink-0 overflow-hidden">
         
         <!-- Header -->
-        <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0">
+        <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0 min-w-[18rem]"> <!-- min-w to prevent content squash -->
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
                     <i class="ph-fill ph-television text-white text-lg"></i>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">IPTV</span>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">respw</span>
             </div>
-            <!-- Close Button: ซ่อนบน Desktop -->
+            <!-- Mobile Close Button -->
             <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
         </div>
 
         <!-- Search Box -->
-        <div class="p-4 shrink-0">
+        <div class="p-4 shrink-0 min-w-[18rem]">
             <div class="relative group">
                 <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors"></i>
                 <input type="text" id="searchInput" placeholder="ค้นหาช่อง..." 
@@ -116,7 +125,7 @@
         </div>
 
         <!-- Categories -->
-        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right" id="categoryContainer">
+        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right min-w-[18rem]" id="categoryContainer">
               <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">All</button>
             <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">New</button>
             <button onclick="selectCategory('Monomax', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Monomax</button>
@@ -124,25 +133,25 @@
         </div>
 
         <!-- Channel List -->
-        <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar" id="channelList" role="listbox">
+        <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar min-w-[18rem]" id="channelList" role="listbox">
             <!-- JS Rendered Items -->
         </div>
         
         <!-- Footer -->
-        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
-            v1.3.2 • กด Enter เพื่อเล่น
+        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
+            v1.3.3 • กด Enter เพื่อเล่น
         </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="flex-1 relative h-full min-w-0 bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Floating Menu Button: ซ่อนบน Desktop (lg:hidden) -->
-        <button onclick="toggleMenu(true)" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+        <!-- Floating Menu Button: Visible on ALL screens now -->
+        <button onclick="toggleMenu()" class="absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
         </button>
 
-        <!-- ANDROID ONLY: External App Button (Hidden by default, shown via JS) -->
+        <!-- ANDROID ONLY: External App Button -->
         <button id="externalPlayerBtn" onclick="openInExternalApp()" class="hidden absolute top-5 right-5 z-30 w-12 h-12 rounded-full bg-blue-600/80 hover:bg-blue-500 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group animate-bounce-slow">
             <i class="ph-fill ph-arrow-square-out text-2xl"></i>
         </button>
@@ -168,7 +177,7 @@
     <script>
         // --- Data ---
         const channels = [
-            { 
+  { 
                 id: 1, 
                 name: "Mono29", 
                 category: "News", 
@@ -284,7 +293,7 @@
 
         let hls = null;
         let currentCategory = 'All'; 
-        let currentChannelUrl = ""; // Store current URL for external play
+        let currentChannelUrl = ""; 
         
         const video = document.getElementById('videoPlayer');
         const sidebar = document.getElementById('sidebar');
@@ -294,32 +303,21 @@
         const searchInput = document.getElementById('searchInput');
         const externalPlayerBtn = document.getElementById('externalPlayerBtn');
 
-        // --- Android Detection & Logic ---
         function checkAndroid() {
             const ua = navigator.userAgent.toLowerCase();
-            const isAndroid = ua.indexOf("android") > -1;
-            if (isAndroid) {
+            if (ua.indexOf("android") > -1) {
                 externalPlayerBtn.classList.remove('hidden');
             }
         }
 
         window.openInExternalApp = () => {
             if (!currentChannelUrl) return;
-            
-            // ลบ http:// หรือ https:// ออกเพื่อนำไปสร้าง intent string
             const cleanUrl = currentChannelUrl.replace(/^https?:\/\//, '');
             const scheme = currentChannelUrl.startsWith('https') ? 'https' : 'http';
-            
-            // สร้าง IntentURI สำหรับ Android
-            // โครงสร้าง: intent://<URL>#Intent;scheme=<http/https>;type=video/*;action=android.intent.action.VIEW;end;
-            // คำสั่งนี้จะบังคับให้ Android หาแอปที่เล่น video/* มาเปิด URL นี้
             const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;action=android.intent.action.VIEW;end;`;
-            
-            // สั่ง Redirect ไปยัง Intent (จะไม่เปิดหน้าเว็บใหม่ แต่จะเด้งไปแอปเลย)
             window.location.href = intentUrl;
         };
 
-        // --- Category Logic ---
         window.selectCategory = (category, btnElement) => {
             currentCategory = category;
             const buttons = document.querySelectorAll('.category-btn');
@@ -338,11 +336,34 @@
             renderChannels(searchInput.value);
         }
 
-        // --- Functionality ---
-        function toggleMenu(show) {
-            // Only toggle on mobile screens (<1024px)
-            if (window.innerWidth < 1024) {
-                if (show) {
+        // --- Unified Toggle Logic ---
+        function toggleMenu(forceState) {
+            const isDesktop = window.innerWidth >= 1024;
+            
+            // Calculate Target State (Should show?)
+            let shouldShow;
+            if (typeof forceState !== 'undefined') {
+                shouldShow = forceState;
+            } else {
+                // Toggle based on current state
+                if (isDesktop) {
+                    // On Desktop, if it has 'sidebar-collapsed', it is HIDDEN. So we want to SHOW it.
+                    shouldShow = sidebar.classList.contains('sidebar-collapsed');
+                } else {
+                    // On Mobile, if it has '-translate-x-full', it is HIDDEN. So we want to SHOW it.
+                    shouldShow = sidebar.classList.contains('-translate-x-full');
+                }
+            }
+
+            // Apply State
+            if (isDesktop) {
+                if (shouldShow) {
+                    sidebar.classList.remove('sidebar-collapsed');
+                } else {
+                    sidebar.classList.add('sidebar-collapsed');
+                }
+            } else {
+                if (shouldShow) {
                     sidebar.classList.remove('-translate-x-full');
                     mobileOverlay.classList.remove('hidden');
                     setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
@@ -356,13 +377,11 @@
 
         window.hideError = () => errorOverlay.classList.add('hidden');
 
-        // --- HLS Player Logic ---
         window.playChannel = (index, autoPlay = true) => {
             hideError();
             const channel = channels[index];
-            currentChannelUrl = channel.url; // Save URL
+            currentChannelUrl = channel.url; 
             
-            // UI Update
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
             const selectedEl = document.getElementById(`chan-${channel.id}`);
             if(selectedEl) {
@@ -370,7 +389,7 @@
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // Mobile: Close menu. Desktop: Keep open.
+            // Auto-close only on Mobile
             if (window.innerWidth < 1024) {
                 toggleMenu(false);
             }
@@ -378,9 +397,7 @@
             console.log(`Loading: ${channel.name}`);
 
             if (Hls.isSupported()) {
-                if (hls) {
-                    hls.destroy();
-                }
+                if (hls) { hls.destroy(); }
                 hls = new Hls();
                 hls.loadSource(channel.url);
                 hls.attachMedia(video);
@@ -390,16 +407,9 @@
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                hls.destroy();
-                                errorOverlay.classList.remove('hidden');
-                                break;
+                            case Hls.ErrorTypes.NETWORK_ERROR: hls.startLoad(); break;
+                            case Hls.ErrorTypes.MEDIA_ERROR: hls.recoverMediaError(); break;
+                            default: hls.destroy(); errorOverlay.classList.remove('hidden'); break;
                         }
                     }
                 });
@@ -409,9 +419,7 @@
                 video.addEventListener('loadedmetadata', function() {
                     if(autoPlay) video.play().catch(e => console.log("Autoplay prevented:", e));
                 });
-                video.addEventListener('error', () => {
-                    errorOverlay.classList.remove('hidden');
-                });
+                video.addEventListener('error', () => errorOverlay.classList.remove('hidden'));
             } else {
                 alert("Browser not supported");
             }
@@ -474,8 +482,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
             renderChannels(); 
-            
-            // Check OS for button visibility
             checkAndroid();
 
             document.addEventListener('keydown', (e) => {
@@ -493,8 +499,7 @@
                 }
             });
 
-            // Auto Play Config
-            const defaultId = 10; 
+            const defaultId = 4; 
             setTimeout(() => {
                 const index = channels.findIndex(c => c.id === defaultId);
                 if(index !== -1) playChannel(index, true);
