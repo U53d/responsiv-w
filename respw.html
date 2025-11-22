@@ -98,7 +98,7 @@
                 <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
                     <i class="ph-fill ph-television text-white text-lg"></i>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">respw</span>
+                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">IPTV</span>
             </div>
             <!-- Close Button: ซ่อนบน Desktop -->
             <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
@@ -129,7 +129,7 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
-            v1.3.1 • กด Enter เพื่อเล่น
+            v1.3.2 • กด Enter เพื่อเล่น
         </div>
     </div>
 
@@ -139,6 +139,11 @@
         <!-- Floating Menu Button: ซ่อนบน Desktop (lg:hidden) -->
         <button onclick="toggleMenu(true)" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
+        </button>
+
+        <!-- ANDROID ONLY: External App Button (Hidden by default, shown via JS) -->
+        <button id="externalPlayerBtn" onclick="openInExternalApp()" class="hidden absolute top-5 right-5 z-30 w-12 h-12 rounded-full bg-blue-600/80 hover:bg-blue-500 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group animate-bounce-slow">
+            <i class="ph-fill ph-arrow-square-out text-2xl"></i>
         </button>
 
         <!-- Video Player Container -->
@@ -182,6 +187,7 @@
 
         let hls = null;
         let currentCategory = 'All'; 
+        let currentChannelUrl = ""; // Store current URL for external play
         
         const video = document.getElementById('videoPlayer');
         const sidebar = document.getElementById('sidebar');
@@ -189,6 +195,34 @@
         const channelListEl = document.getElementById('channelList');
         const errorOverlay = document.getElementById('errorOverlay');
         const searchInput = document.getElementById('searchInput');
+        const externalPlayerBtn = document.getElementById('externalPlayerBtn');
+
+        // --- Android Detection & Logic ---
+        function checkAndroid() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isAndroid = ua.indexOf("android") > -1;
+            if (isAndroid) {
+                externalPlayerBtn.classList.remove('hidden');
+            }
+        }
+
+        window.openInExternalApp = () => {
+            if (!currentChannelUrl) return;
+            
+            // Intent scheme for Android to open video player
+            // Try URL scheme first, fallback to intent if needed.
+            // Simple URL often triggers chooser on modern Android browsers
+            
+            // Constructing a secure intent
+            const schemeUrl = currentChannelUrl.replace(/^https?:\/\//, '');
+            const intentUrl = `intent://${schemeUrl}#Intent;scheme=https;type=video/*;end`;
+            
+            // Try standard window open first (often enough)
+            window.open(currentChannelUrl, '_blank');
+            
+            // Fallback/Alternative: If specific behavior needed, you can uncomment:
+            // window.location.href = intentUrl;
+        };
 
         // --- Category Logic ---
         window.selectCategory = (category, btnElement) => {
@@ -231,6 +265,7 @@
         window.playChannel = (index, autoPlay = true) => {
             hideError();
             const channel = channels[index];
+            currentChannelUrl = channel.url; // Save URL
             
             // UI Update
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
@@ -344,6 +379,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
             renderChannels(); 
+            
+            // Check OS for button visibility
+            checkAndroid();
 
             document.addEventListener('keydown', (e) => {
                 const active = document.activeElement;
