@@ -33,23 +33,57 @@
             scrollbar-width: none;
         }
 
-        /* Sidebar Transition */
+        /* Sidebar Base Transition */
         #sidebar {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            z-index: 50; /* High Z-index to overlap video */
         }
 
-        /* Desktop Collapsed State */
+        /* --- DESKTOP HOVER LOGIC (PC) --- */
         @media (min-width: 1024px) {
-            .sidebar-collapsed {
-                width: 0 !important;
-                border-right: none !important;
+            #sidebar {
+                transform: translateX(0) !important; /* Always show (technically) */
+                width: 1rem; /* Collapsed width (trigger zone ~16px) */
+                background-color: transparent; /* Invisible when collapsed */
+                border-right: none;
+            }
+            
+            /* Show trigger hint on left edge (Optional) */
+            #sidebar::after {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; bottom: 0;
+                width: 4px;
+                background: rgba(255,255,255,0.1);
+                transition: opacity 0.3s;
+            }
+            #sidebar:hover::after {
+                opacity: 0; /* Hide hint when expanded */
+            }
+
+            /* Expand on Hover */
+            #sidebar:hover {
+                width: 18rem; /* w-72 */
+                background-color: rgba(24, 24, 27, 0.95); /* bg-zinc-900/95 */
+                border-right: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 10px 0 30px -10px rgba(0,0,0,0.5);
+            }
+
+            /* Content Visibility Animation */
+            #sidebar > * {
                 opacity: 0;
-                padding: 0 !important;
-                overflow: hidden !important;
+                transition: opacity 0.15s ease-in-out;
+                pointer-events: none; /* Prevent clicking when hidden */
+            }
+            #sidebar:hover > * {
+                opacity: 1;
+                pointer-events: auto;
+                transition-delay: 0.1s; /* Slight delay for smoother feel */
             }
         }
+        /* --- END DESKTOP LOGIC --- */
 
         .channel-item {
             transition: all 0.2s ease-out;
@@ -94,13 +128,17 @@
     </style>
 </head>
 
-<body class="h-screen w-screen flex flex-row bg-black">
+<body class="h-screen w-screen flex bg-black overflow-hidden">
 
     <!-- Mobile Overlay -->
     <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 lg:relative lg:shadow-none flex flex-col shadow-2xl shrink-0 overflow-hidden">
+    <!-- 
+         Mobile: Controlled by JS (-translate-x-full)
+         Desktop: Controlled by CSS Hover (See <style>) 
+    -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 flex flex-col shadow-2xl shrink-0 overflow-hidden">
         
         <!-- Header -->
         <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0 min-w-[18rem]">
@@ -110,6 +148,7 @@
                 </div>
                 <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">respw</span>
             </div>
+            <!-- Mobile Close Button -->
             <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
@@ -126,10 +165,9 @@
 
         <!-- Categories -->
         <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right min-w-[18rem]" id="categoryContainer">
-              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">All</button>
-            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">New</button>
-            <button onclick="selectCategory('Monomax', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Monomax</button>
-            <button onclick="selectCategory('Beinsport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Beinsport</button>
+              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">ทั้งหมด</button>
+            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">ข่าว</button>
+            <button onclick="selectCategory('Sport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">กีฬา</button>
         </div>
 
         <!-- Channel List -->
@@ -139,15 +177,15 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
-            v1.5.0 • กด Enter เพื่อเล่น
+            v1.6.0 • กด Enter เพื่อเล่น
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 relative h-full min-w-0 bg-black flex flex-col justify-center items-center overflow-hidden">
+    <div class="flex-1 relative h-full w-full bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Floating Menu Button -->
-        <button onclick="toggleMenu()" class="absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+        <!-- Floating Menu Button: HIDDEN ON PC (lg:hidden) -->
+        <button onclick="toggleMenu()" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
         </button>
 
@@ -158,17 +196,8 @@
 
         <!-- Video Player / Embed Container -->
         <div class="w-full h-full relative bg-black flex items-center justify-center">
-            <!-- Native Video Player for HLS -->
             <video id="videoPlayer" controls autoplay playsinline poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"></video>
             
-            <!-- Iframe for Embed Links with SANDBOX for AD BLOCKING -->
-            <!-- 
-                 sandbox="allow-scripts allow-same-origin allow-forms"
-                 - allow-scripts: ให้วิดีโอเล่นได้
-                 - allow-same-origin: ให้โหลดไฟล์ข้ามโดเมนได้
-                 - (สำคัญ) ไม่ใส่ allow-popups: ป้องกันการเด้งหน้าต่างใหม่
-                 - (สำคัญ) ไม่ใส่ allow-top-navigation: ป้องกันการเปลี่ยนหน้าเว็บเราไปเว็บอื่น
-            -->
             <iframe 
                 id="embedPlayer" 
                 class="hidden w-full h-full" 
@@ -178,7 +207,6 @@
                 sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
             ></iframe>
 
-            <!-- Error Overlay -->
             <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
                 <div class="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4 border border-white/10">
                     <i class="ph ph-warning-circle text-gray-400 text-4xl"></i>
@@ -342,10 +370,8 @@
             const url = currentChannelData.url;
 
             if (currentChannelData.type === 'embed') {
-                // Embed Link: Open in Browser
                 window.open(url, '_blank');
             } else {
-                // Video Stream: Open in Player App (Intent)
                 const cleanUrl = url.replace(/^https?:\/\//, '');
                 const scheme = url.startsWith('https') ? 'https' : 'http';
                 const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;action=android.intent.action.VIEW;end;`;
@@ -371,27 +397,20 @@
             renderChannels(searchInput.value);
         }
 
+        // Only handles Mobile Toggle now
         function toggleMenu(forceState) {
-            const isDesktop = window.innerWidth >= 1024;
-            let shouldShow;
             if (typeof forceState !== 'undefined') {
-                shouldShow = forceState;
-            } else {
-                if (isDesktop) {
-                    shouldShow = sidebar.classList.contains('sidebar-collapsed');
+                if (forceState) {
+                    sidebar.classList.remove('-translate-x-full');
+                    mobileOverlay.classList.remove('hidden');
+                    setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
                 } else {
-                    shouldShow = sidebar.classList.contains('-translate-x-full');
-                }
-            }
-
-            if (isDesktop) {
-                if (shouldShow) {
-                    sidebar.classList.remove('sidebar-collapsed');
-                } else {
-                    sidebar.classList.add('sidebar-collapsed');
+                    sidebar.classList.add('-translate-x-full');
+                    mobileOverlay.classList.add('opacity-0');
+                    setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
                 }
             } else {
-                if (shouldShow) {
+                if (sidebar.classList.contains('-translate-x-full')) {
                     sidebar.classList.remove('-translate-x-full');
                     mobileOverlay.classList.remove('hidden');
                     setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
@@ -417,33 +436,25 @@
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
+            // Close menu only on Mobile
             if (window.innerWidth < 1024) {
                 toggleMenu(false);
             }
             
             console.log(`Loading: ${channel.name} [${channel.type || 'stream'}]`);
 
-            // === SWITCH PLAYER LOGIC ===
             if (channel.type === 'embed') {
-                // 1. Stop Video/HLS
                 if (hls) { hls.destroy(); hls = null; }
                 video.pause();
                 video.src = ""; 
-                video.classList.add('hidden'); // Hide Video Tag
-                
-                // 2. Show Iframe
+                video.classList.add('hidden'); 
                 iframe.src = channel.url;
-                iframe.classList.remove('hidden'); // Show Iframe Tag
-
+                iframe.classList.remove('hidden'); 
             } else {
-                // 1. Hide Iframe
                 iframe.classList.add('hidden'); 
                 iframe.src = ""; 
-
-                // 2. Show Video Tag
                 video.classList.remove('hidden');
 
-                // 3. Start HLS
                 if (Hls.isSupported()) {
                     if (hls) { hls.destroy(); }
                     hls = new Hls();
@@ -507,7 +518,6 @@
                     iconHtml = `<i class="ph ${channel.logo} text-gray-400 group-hover:text-white text-lg transition-colors group-hover:scale-110"></i>`;
                 }
 
-                // Add badge for Embed channels
                 let badge = '';
                 if(channel.type === 'embed') {
                     badge = `<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>`;
