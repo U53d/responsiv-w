@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>respw</title>
+    <title>IPTV Player - Grey Theme (HLS.js)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -129,7 +129,7 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0">
-            v1.3.2 • กด Enter เพื่อเล่น
+            v1.3.2 (Android Ext. App) • กด Enter เพื่อเล่น
         </div>
     </div>
 
@@ -182,7 +182,7 @@
                 logo: "ph-soccer-ball",
                 logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
                 url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1732540&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAxOjE3OjE4IEFNJmhhc2hfdmFsdWU9L1VTZ2pVaFVlMitxZTBqTERQZVVHdz09JnZhbGlkbWludXRlcz0y" 
-            }, 
+            },
         ];
 
         let hls = null;
@@ -209,19 +209,17 @@
         window.openInExternalApp = () => {
             if (!currentChannelUrl) return;
             
-            // Intent scheme for Android to open video player
-            // Try URL scheme first, fallback to intent if needed.
-            // Simple URL often triggers chooser on modern Android browsers
+            // ลบ http:// หรือ https:// ออกเพื่อนำไปสร้าง intent string
+            const cleanUrl = currentChannelUrl.replace(/^https?:\/\//, '');
+            const scheme = currentChannelUrl.startsWith('https') ? 'https' : 'http';
             
-            // Constructing a secure intent
-            const schemeUrl = currentChannelUrl.replace(/^https?:\/\//, '');
-            const intentUrl = `intent://${schemeUrl}#Intent;scheme=https;type=video/*;end`;
+            // สร้าง IntentURI สำหรับ Android
+            // โครงสร้าง: intent://<URL>#Intent;scheme=<http/https>;type=video/*;action=android.intent.action.VIEW;end;
+            // คำสั่งนี้จะบังคับให้ Android หาแอปที่เล่น video/* มาเปิด URL นี้
+            const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;action=android.intent.action.VIEW;end;`;
             
-            // Try standard window open first (often enough)
-            window.open(currentChannelUrl, '_blank');
-            
-            // Fallback/Alternative: If specific behavior needed, you can uncomment:
-            // window.location.href = intentUrl;
+            // สั่ง Redirect ไปยัง Intent (จะไม่เปิดหน้าเว็บใหม่ แต่จะเด้งไปแอปเลย)
+            window.location.href = intentUrl;
         };
 
         // --- Category Logic ---
