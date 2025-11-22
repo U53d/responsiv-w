@@ -176,12 +176,20 @@
                 url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8" 
             },
             { 
-                id: 4, 
+                id: 10, 
                 name: "Bein sport 1", 
                 category: "Sport", 
                 logo: "ph-soccer-ball",
                 logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1732540&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAxOjE3OjE4IEFNJmhhc2hfdmFsdWU9L1VTZ2pVaFVlMitxZTBqTERQZVVHdz09JnZhbGlkbWludXRlcz0y" 
+                url: "https://lsv3.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=27757697&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAzOjAwOjMwIFBNJmhhc2hfdmFsdWU9M0dlSjRyWDE4YjcvRzZtMEZGK2prZz09JnZhbGlkbWludXRlcz0y" 
+            },
+            { 
+                id: 11, 
+                name: "Bein sport 1", 
+                category: "Sport", 
+                logo: "ph-soccer-ball",
+                logoUrl: "https://www.ais.th/content/ais/th/th_th/consumers/entertainment/streaming-app/monomax/_jcr_content/root/container_1816311984/aiscontainer/columncontrol_copy_c/content1/image.coreimg.jpeg/1749202563435/logo-monomax-2025.jpeg", 
+                url: "https://lsv3.inwstream.com/transcoder_F1/aismonomaxsports3_inwiptv.stream/chunks.m3u8?nimblesessionid=27756696&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAyOjUwOjUzIFBNJmhhc2hfdmFsdWU9Nis5SjBHMUtzcEplaWpwbGIwdGk3QT09JnZhbGlkbWludXRlcz0y" 
             },
         ];
 
@@ -397,7 +405,7 @@
             });
 
             // Auto Play Config
-            const defaultId = 4; 
+            const defaultId = 10; 
             setTimeout(() => {
                 const index = channels.findIndex(c => c.id === defaultId);
                 if(index !== -1) playChannel(index, true);
