@@ -38,19 +38,17 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            z-index: 50; /* อยู่บนสุดเสมอ */
+            z-index: 50;
         }
 
-        /* --- PC ONLY: HOVER LOGIC (หน้าจอใหญ่กว่า 1024px) --- */
+        /* --- PC ONLY: HOVER LOGIC --- */
         @media (min-width: 1024px) {
             #sidebar {
-                transform: translateX(0) !important; /* แสดงตลอดเวลา (แต่หด) */
-                width: 1rem; /* ความกว้างตอนหด (แถบรับเมาส์ ~16px) */
-                background-color: transparent; /* โปร่งใสตอนหด */
+                transform: translateX(0) !important;
+                width: 1rem;
+                background-color: transparent;
                 border-right: none;
             }
-            
-            /* เส้นบอกแนวตอนหด (Optional) */
             #sidebar::after {
                 content: '';
                 position: absolute;
@@ -59,35 +57,26 @@
                 background: rgba(255,255,255,0.1);
                 transition: opacity 0.3s;
             }
-            #sidebar:hover::after {
-                opacity: 0;
-            }
-
-            /* ตอนเอาเมาส์ชี้ (Hover) */
+            #sidebar:hover::after { opacity: 0; }
             #sidebar:hover {
-                width: 18rem; /* ขยายเป็น w-72 */
-                background-color: rgba(24, 24, 27, 0.95); /* สีพื้นหลังกลับมา */
+                width: 18rem;
+                background-color: rgba(24, 24, 27, 0.95);
                 border-right: 1px solid rgba(255,255,255,0.1);
                 box-shadow: 10px 0 30px -10px rgba(0,0,0,0.5);
             }
-
-            /* ซ่อนเนื้อหาภายในตอนหด */
             #sidebar > * {
                 opacity: 0;
                 transition: opacity 0.15s ease-in-out;
                 pointer-events: none; 
             }
-            /* แสดงเนื้อหาตอน Hover */
             #sidebar:hover > * {
                 opacity: 1;
                 pointer-events: auto;
                 transition-delay: 0.1s;
             }
         }
-        /* --- END PC LOGIC --- */
 
-        /* --- MOBILE: ไม่มีการแก้ไข CSS ให้ใช้ Class Tailwind ปกติ (w-72) --- */
-
+        /* --- MOBILE --- */
         .channel-item {
             transition: all 0.2s ease-out;
             border: 1px solid transparent;
@@ -110,7 +99,6 @@
             color: #ffffff;
             font-weight: 600;
         }
-
         .channel-item:focus {
             outline: none;
             background-color: rgba(255, 255, 255, 0.2);
@@ -137,10 +125,6 @@
     <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
 
     <!-- Sidebar -->
-    <!-- 
-         Mobile: ใช้ w-72 ปกติ, ควบคุมด้วย -translate-x-full (ซ่อน)
-         PC (lg): ควบคุมด้วย CSS Hover ด้านบน (w-72 จะถูก override เป็น 1rem ตอนปกติ)
-    -->
     <div id="sidebar" class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 flex flex-col shadow-2xl shrink-0 overflow-hidden">
         
         <!-- Header -->
@@ -151,7 +135,6 @@
                 </div>
                 <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">respw</span>
             </div>
-            <!-- ปุ่มปิด (Close) สำหรับมือถือ -->
             <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
                 <i class="ph ph-x text-lg"></i>
             </button>
@@ -181,14 +164,14 @@
         
         <!-- Footer -->
         <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
-            v1.7.0 (Mobile Slide / PC Hover) • กด Enter เพื่อเล่น
+            v1.8.0 • กด Enter เพื่อเล่น
         </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="flex-1 relative h-full w-full bg-black flex flex-col justify-center items-center overflow-hidden">
         
-        <!-- Floating Menu Button: แสดงเฉพาะมือถือ (lg:hidden) -->
+        <!-- Floating Menu Button: Mobile Only -->
         <button onclick="toggleMenu()" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
             <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
         </button>
@@ -202,13 +185,14 @@
         <div class="w-full h-full relative bg-black flex items-center justify-center">
             <video id="videoPlayer" controls autoplay playsinline poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"></video>
             
+            <!-- Iframe WITHOUT sandbox attribute -->
             <iframe 
                 id="embedPlayer" 
                 class="hidden w-full h-full" 
                 allowfullscreen 
                 allow="autoplay; encrypted-media; picture-in-picture" 
                 scrolling="no"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                referrerpolicy="no-referrer"
             ></iframe>
 
             <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
@@ -232,7 +216,7 @@
                 name: "Liverpool vs NFO", 
                 category: "Live", 
                 logo: "ph-soccer-ball", 
-                type: "embed", // ระบุว่าเป็น Embed
+                type: "embed", 
                 url: "https://embedsports.top/embed/echo/1st-practice-losail-international-circuit-formula-1-2495/2"
             },
              { 
@@ -569,6 +553,7 @@
                 }
             });
 
+            // Set default ID to 0 to play the first channel (Embed)
             const defaultId = 1; 
             setTimeout(() => {
                 const index = channels.findIndex(c => c.id === defaultId);
