@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- HLS.js Library -->
@@ -20,9 +20,9 @@
         }
         body {
             font-family: 'Kanit', sans-serif;
-            background-color: #000;
+            background-color: #0b0b0b; /* Darker black for dashboard background */
             color: white;
-            overflow: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll on body */
         }
         
         .no-scrollbar::-webkit-scrollbar {
@@ -33,7 +33,34 @@
             scrollbar-width: none;
         }
 
-        /* Sidebar Base Style */
+        /* --- DASHBOARD STYLES --- */
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        /* Grid Layout for Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Fade animation for preview */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* --- PLAYER & SIDEBAR STYLES (Keep Original) --- */
+        #playerView {
+            background-color: #000;
+        }
+
         #sidebar {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(12px);
@@ -41,7 +68,7 @@
             z-index: 50;
         }
 
-        /* --- PC ONLY: HOVER LOGIC --- */
+        /* PC HOVER LOGIC for Sidebar */
         @media (min-width: 1024px) {
             #sidebar {
                 transform: translateX(0) !important;
@@ -76,7 +103,6 @@
             }
         }
 
-        /* --- MOBILE --- */
         .channel-item {
             transition: all 0.2s ease-out;
             border: 1px solid transparent;
@@ -119,91 +145,155 @@
     </style>
 </head>
 
-<body class="h-screen w-screen flex bg-black overflow-hidden">
+<body class="bg-[#0b0b0b]">
 
-    <!-- Mobile Overlay -->
-    <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 flex flex-col shadow-2xl shrink-0 overflow-hidden">
+    <!-- ================= HOME DASHBOARD VIEW ================= -->
+    <div id="homeView" class="min-h-screen flex flex-col transition-opacity duration-300">
         
-        <!-- Header -->
-        <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0 min-w-[18rem]">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
-                    <i class="ph-fill ph-television text-white text-lg"></i>
+        <!-- Navbar -->
+        <nav class="h-16 px-4 md:px-8 border-b border-white/5 bg-[#0b0b0b] flex items-center justify-between sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
+            <div class="flex items-center gap-8">
+                <!-- Logo -->
+                <a href="#" onclick="showHome()" class="flex items-center gap-2 group">
+                    <i class="ph-fill ph-trophy text-white text-2xl group-hover:text-red-500 transition-colors"></i>
+                    <span class="text-xl font-bold tracking-wide">Streamed</span>
+                </a>
+                
+                <!-- Desktop Links -->
+                <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
+                    <a href="#" onclick="filterHome('All')" class="hover:text-white transition-colors">Home</a>
+                    <a href="#" onclick="filterHome('Live')" class="hover:text-white transition-colors">Live</a>
+                    <a href="#" onclick="filterHome('Sport')" class="hover:text-white transition-colors">Sport</a>
+                    <a href="#" onclick="filterHome('News')" class="hover:text-white transition-colors">News</a>
                 </div>
-                <span class="font-semibold text-lg tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">respw</span>
             </div>
-            <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
-                <i class="ph ph-x text-lg"></i>
-            </button>
-        </div>
 
-        <!-- Search Box -->
-        <div class="p-4 shrink-0 min-w-[18rem]">
-            <div class="relative group">
-                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors"></i>
-                <input type="text" id="searchInput" placeholder="ค้นหาช่อง..." 
-                    class="w-full bg-zinc-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-gray-400/50 focus:bg-zinc-800 focus:ring-2 focus:ring-gray-500/20 outline-none transition-all text-sm placeholder-gray-600">
+            <div class="flex items-center gap-4">
+                <!-- Search -->
+                <div class="relative hidden sm:block">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="homeSearch" placeholder="Search..." 
+                        class="bg-[#1a1a1a] text-sm text-white pl-9 pr-4 py-2 rounded-lg border border-white/5 focus:border-white/20 focus:bg-[#252525] outline-none w-64 transition-all">
+                </div>
+                <!-- Icons -->
+                <div class="flex items-center gap-2 text-gray-400">
+                    <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph-fill ph-discord-logo"></i></button>
+                    <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph ph-bell"></i></button>
+                    <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph ph-user-circle"></i></button>
+                </div>
             </div>
-        </div>
+        </nav>
 
-        <!-- Categories -->
-        <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right min-w-[18rem]" id="categoryContainer">
-              <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">All</button>
-            <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">New</button>
-            <button onclick="selectCategory('Monomax', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Monomax</button>
-            <button onclick="selectCategory('Beinsport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Beinsport</button>
-        </div>
+        <!-- Content Container -->
+        <main class="flex-1 p-4 md:p-8 max-w-[1600px] mx-auto w-full">
+            
+            <!-- Section Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <span id="homeCategoryTitle">Popular Live</span>
+                    <span class="text-xs font-normal text-gray-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">Live</span>
+                </h2>
+                <div class="flex gap-2">
+                    <button class="w-8 h-8 rounded bg-[#1a1a1a] flex items-center justify-center hover:bg-white/10"><i class="ph ph-caret-left"></i></button>
+                    <button class="w-8 h-8 rounded bg-[#1a1a1a] flex items-center justify-center hover:bg-white/10"><i class="ph ph-caret-right"></i></button>
+                </div>
+            </div>
 
-        <!-- Channel List -->
-        <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar min-w-[18rem]" id="channelList" role="listbox">
-            <!-- JS Rendered Items -->
-        </div>
-        
-        <!-- Footer -->
-        <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
-            v1.8.0 • กด Enter เพื่อเล่น
-        </div>
+            <!-- Grid Cards -->
+            <div id="homeGrid" class="cards-grid pb-20">
+                <!-- Javascript will inject cards here -->
+            </div>
+
+        </main>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 relative h-full w-full bg-black flex flex-col justify-center items-center overflow-hidden">
-        
-        <!-- Floating Menu Button: Mobile Only -->
-        <button onclick="toggleMenu()" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
-            <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
-        </button>
+    <!-- ================= PLAYER VIEW (HIDDEN INITIALLY) ================= -->
+    <div id="playerView" class="h-screen w-screen flex hidden relative bg-black overflow-hidden">
 
-        <!-- ANDROID ONLY: External App Button -->
-        <button id="externalPlayerBtn" onclick="openInExternalApp()" class="hidden absolute top-5 right-5 z-30 w-12 h-12 rounded-full bg-blue-600/80 hover:bg-blue-500 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group animate-bounce-slow">
-            <i class="ph-fill ph-arrow-square-out text-2xl"></i>
-        </button>
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-all duration-300 opacity-0"></div>
 
-        <!-- Video Player / Embed Container -->
-        <div class="w-full h-full relative bg-black flex items-center justify-center">
-            <video id="videoPlayer" controls autoplay playsinline poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"></video>
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-900/95 border-r border-white/10 transform -translate-x-full lg:translate-x-0 flex flex-col shadow-2xl shrink-0 overflow-hidden">
             
-            <!-- Iframe WITHOUT sandbox attribute -->
-            <iframe 
-                id="embedPlayer" 
-                class="hidden w-full h-full" 
-                allowfullscreen 
-                allow="autoplay; encrypted-media; picture-in-picture" 
-                scrolling="no"
-                referrerpolicy="no-referrer"
-            ></iframe>
-
-            <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
-                <div class="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4 border border-white/10">
-                    <i class="ph ph-warning-circle text-gray-400 text-4xl"></i>
+            <!-- Header (With Back to Home) -->
+            <div class="h-16 px-5 flex items-center justify-between border-b border-white/5 bg-white/5 backdrop-blur-xl shrink-0 min-w-[18rem]">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showHome()">
+                    <div class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">
+                        <i class="ph-bold ph-arrow-left text-white"></i>
+                    </div>
+                    <span class="font-semibold text-sm text-gray-300 hover:text-white">Back to Home</span>
                 </div>
-                <h3 class="text-2xl font-semibold text-white mb-2">สัญญาณขัดข้อง</h3>
-                <p class="text-gray-400 text-sm mb-6">ไม่สามารถเล่นไฟล์นี้ได้ในขณะนี้</p>
-                <button onclick="hideError(); toggleMenu(true);" class="px-6 py-2.5 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition shadow-lg hover:scale-105">
-                    เลือกช่องอื่น
+                <!-- Mobile Close Button -->
+                <button onclick="toggleMenu(false)" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition text-gray-400 hover:text-white">
+                    <i class="ph ph-x text-lg"></i>
                 </button>
+            </div>
+
+            <!-- Search Box (Player Sidebar) -->
+            <div class="p-4 shrink-0 min-w-[18rem]">
+                <div class="relative group">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors"></i>
+                    <input type="text" id="sidebarSearch" placeholder="Search channel..." 
+                        class="w-full bg-zinc-800/50 text-white pl-10 pr-4 py-2.5 rounded-xl border border-white/5 focus:border-gray-400/50 focus:bg-zinc-800 focus:ring-2 focus:ring-gray-500/20 outline-none transition-all text-sm placeholder-gray-600">
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 mask-fade-right min-w-[18rem]" id="categoryContainer">
+                <button onclick="selectCategory('All', this)" class="category-btn active px-3 py-1.5 text-xs font-medium bg-gray-200 text-black rounded-lg shadow-lg shadow-white/10 hover:bg-white transition-colors">All</button>
+                <button onclick="selectCategory('News', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">News</button>
+                <button onclick="selectCategory('Monomax', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Monomax</button>
+                <button onclick="selectCategory('Beinsport', this)" class="category-btn px-3 py-1.5 text-xs font-medium bg-zinc-800 text-gray-400 border border-white/5 rounded-lg hover:bg-zinc-700 hover:text-white transition-all">Beinsport</button>
+            </div>
+
+            <!-- Channel List -->
+            <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1 no-scrollbar min-w-[18rem]" id="channelList" role="listbox">
+                <!-- JS Rendered Items -->
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
+                v2.1.0 (Live Preview) • กด Enter เพื่อเล่น
+            </div>
+        </div>
+
+        <!-- Player Content Area -->
+        <div class="flex-1 relative h-full w-full bg-black flex flex-col justify-center items-center overflow-hidden">
+            
+            <!-- Floating Menu Button: Mobile Only -->
+            <button onclick="toggleMenu()" class="lg:hidden absolute top-5 left-5 z-30 w-12 h-12 rounded-full bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group">
+                <i class="ph ph-list text-2xl group-hover:text-gray-300 transition-colors"></i>
+            </button>
+
+            <!-- ANDROID ONLY: External App Button -->
+            <button id="externalPlayerBtn" onclick="openInExternalApp()" class="hidden absolute top-5 right-5 z-30 w-12 h-12 rounded-full bg-blue-600/80 hover:bg-blue-500 backdrop-blur-md border border-white/10 flex items-center justify-center text-white shadow-2xl transition-all hover:scale-105 group animate-bounce-slow">
+                <i class="ph-fill ph-arrow-square-out text-2xl"></i>
+            </button>
+
+            <!-- Video Player / Embed Container -->
+            <div class="w-full h-full relative bg-black flex items-center justify-center">
+                <video id="videoPlayer" controls autoplay playsinline poster="https://via.placeholder.com/1920x1080/0a0a0a/333333/?text=Select+a+Channel"></video>
+                
+                <iframe 
+                    id="embedPlayer" 
+                    class="hidden w-full h-full" 
+                    allowfullscreen 
+                    allow="autoplay; encrypted-media; picture-in-picture" 
+                    scrolling="no"
+                    referrerpolicy="no-referrer"
+                ></iframe>
+
+                <div id="errorOverlay" class="hidden absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex items-center justify-center flex-col text-center p-6 animate-fade-in">
+                    <div class="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4 border border-white/10">
+                        <i class="ph ph-warning-circle text-gray-400 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-2">สัญญาณขัดข้อง</h3>
+                    <p class="text-gray-400 text-sm mb-6">ไม่สามารถเล่นไฟล์นี้ได้ในขณะนี้</p>
+                    <button onclick="hideError(); toggleMenu(true);" class="px-6 py-2.5 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition shadow-lg hover:scale-105">
+                        เลือกช่องอื่น
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -211,131 +301,28 @@
     <script>
         // --- Data ---
         const channels = [
-            { 
-                id: 0, 
-                name: "Liverpool vs NFO", 
-                category: "Live", 
-                logo: "ph-soccer-ball", 
-                type: "embed", 
-                url: "https://embedsports.top/embed/echo/1st-practice-losail-international-circuit-formula-1-2495/2"
-            },
-             { 
-                id: 1, 
-                name: "Mono29", 
-                category: "News", 
-                logo: "ph-newspaper", 
-                logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png",
-                url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8" 
-            },
-            { 
-                id: 10, 
-                name: "Bein sport 1", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1833556&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODozMiBQTSZoYXNoX3ZhbHVlPW1NTC9XNEhvQlZ2Uisrb3N2Q01zQUE9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 10, 
-                name: "Bein sport 2", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv2.inwstream.com/transcoder_F1/true_bein2_inwiptv.stream/chunks.m3u8?nimblesessionid=597924&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODo1MCBQTSZoYXNoX3ZhbHVlPWY5WWlyWFlvT3BLd1ZWNE12UHU1dGc9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 11, 
-                name: "Bein sport 3", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein3_inwiptv.stream/chunks.m3u8?nimblesessionid=1833577&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODo1NSBQTSZoYXNoX3ZhbHVlPTJiY1VUcjNkSHR0eVNyajBaVDJXdkE9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 12, 
-                name: "Bein sport 4", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein4_inwiptv.stream/chunks.m3u8?nimblesessionid=1833598&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0OToxNCBQTSZoYXNoX3ZhbHVlPWpYZzhNSW5jVS9yN1FEREVWMGxTWmc9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 13, 
-                name: "Bein sport 5", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein5_inwiptv.stream/chunks.m3u8?nimblesessionid=1833607&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0OToyNyBQTSZoYXNoX3ZhbHVlPVJsa3l4dGVPMnRkYktENE5HcXNRU1E9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 14, 
-                name: "Bein sport 6", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein6_inwiptv.stream/chunks.m3u8?nimblesessionid=1833619&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0OTozOSBQTSZoYXNoX3ZhbHVlPTJ2aUk0TVZ5RnZDM3VkcTdvcklNa0E9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 15, 
-                name: "Bein sport 7", 
-                category: "Beinsport", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/true_bein7_inwiptv.stream/chunks.m3u8?nimblesessionid=1833638&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0OTo1OSBQTSZoYXNoX3ZhbHVlPTBvdGd5b3NXNEVWaEk3TXRBZXZWTGc9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 16, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv3.inwstream.com/transcoder_F1/aismonomaxsports3_inwiptv.stream/chunks.m3u8?nimblesessionid=27756696&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAyOjUwOjUzIFBNJmhhc2hfdmFsdWU9Nis5SjBHMUtzcEplaWpwbGIwdGk3QT09JnZhbGlkbWludXRlcz0y" 
-            },
-            { 
-                id: 17, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/aismonomaxsports1_inwiptv.stream/chunks.m3u8?nimblesessionid=1833672&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo1MDozNCBQTSZoYXNoX3ZhbHVlPVBndFljQVY4WjYra0krdXhVT2hHL1E9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 18, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv2.inwstream.com/transcoder_F1/aismonomaxsports2_inwiptv.stream/chunks.m3u8?nimblesessionid=598042&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo1MDo1MiBQTSZoYXNoX3ZhbHVlPVgwK1E4YkM5TjcybU9tTEFlZHpWUlE9PSZ2YWxpZG1pbnV0ZXM9Mg==" 
-            },
-            { 
-                id: 19, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/aismonomaxsports5_inwiptv.stream/chunks.m3u8?nimblesessionid=1782712&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAzOjA2OjI2IFBNJmhhc2hfdmFsdWU9NUNmelNlTGdyQWorUmNRSmJRVzIrQT09JnZhbGlkbWludXRlcz0y" 
-            },
-            { 
-                id: 20, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv1.inwstream.com/transcoder_F1/aismonomaxsports6_inwiptv.stream/chunks.m3u8?nimblesessionid=1782853&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAzOjA2OjU2IFBNJmhhc2hfdmFsdWU9eFI2T1ByVmc4MEN2WVNXZXVEeFVkZz09JnZhbGlkbWludXRlcz0y" 
-            },
-            { 
-                id: 21, 
-                name: "Monomax", 
-                category: "Monomax", 
-                logo: "ph-soccer-ball",
-                logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", 
-                url: "https://lsv3.inwstream.com/transcoder_F1/aismonomaxsports7_inwiptv.stream/chunks.m3u8?nimblesessionid=27759041&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAzOjA3OjE5IFBNJmhhc2hfdmFsdWU9U0dTdlprR0FreVR3WmJyb0dLRit2dz09JnZhbGlkbWludXRlcz0y" 
-            },
+            { id: 0, name: "Liverpool vs NFO", category: "Live", logo: "ph-soccer-ball", type: "embed", url: "https://embedsports.top/embed/echo/1st-practice-losail-international-circuit-formula-1-2495/2" },
+            { id: 1, name: "Mono29", category: "News", logo: "ph-newspaper", logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png", url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8" },
+            { id: 10, name: "Bein sport 1", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", url: "https://lsv1.inwstream.com/transcoder_F1/true_bein1f1_inwiptv.stream/chunks.m3u8?nimblesessionid=1833556&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODozMiBQTSZoYXNoX3ZhbHVlPW1NTC9XNEhvQlZ2Uisrb3N2Q01zQUE9PSZ2YWxpZG1pbnV0ZXM9Mg==" },
+            { id: 11, name: "Bein sport 2", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", url: "https://lsv2.inwstream.com/transcoder_F1/true_bein2_inwiptv.stream/chunks.m3u8?nimblesessionid=597924&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODo1MCBQTSZoYXNoX3ZhbHVlPWY5WWlyWFlvT3BLd1ZWNE12UHU1dGc9PSZ2YWxpZG1pbnV0ZXM9Mg==" },
+            { id: 12, name: "Bein sport 3", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2021/08/26/05890500-0632-11ec-9b2a-5fa5449ad866_webp_320.png", url: "https://lsv1.inwstream.com/transcoder_F1/true_bein3_inwiptv.stream/chunks.m3u8?nimblesessionid=1833577&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjMvMjAyNSAxMjo0ODo1NSBQTSZoYXNoX3ZhbHVlPTJiY1VUcjNkSHR0eVNyajBaVDJXdkE9PSZ2YWxpZG1pbnV0ZXM9Mg==" },
+            { id: 16, name: "Monomax 1", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", url: "https://lsv3.inwstream.com/transcoder_F1/aismonomaxsports3_inwiptv.stream/chunks.m3u8?nimblesessionid=27756696&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAyOjUwOjUzIFBNJmhhc2hfdmFsdWU9Nis5SjBHMUtzcEplaWpwbGIwdGk3QT09JnZhbGlkbWludXRlcz0y" },
+            { id: 19, name: "Monomax 2", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://img.monomax.me/9ahQXPNNQxosilSBzpPyZRzSQ6M=/www.monomax.me/assets/monomax/images/logo2025/monomax-logo-white-h-sd.png", url: "https://lsv1.inwstream.com/transcoder_F1/aismonomaxsports5_inwiptv.stream/chunks.m3u8?nimblesessionid=1782712&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjIvMjAyNSAzOjA2OjI2IFBNJmhhc2hfdmFsdWU9NUNmelNlTGdyQWorUmNRSmJRVzIrQT09JnZhbGlkbWludXRlcz0y" },
         ];
 
         let hls = null;
         let currentCategory = 'All'; 
         let currentChannelData = null; 
+        
+        // Preview Global Vars
+        let previewHls = null;
+        let previewTimeout = null;
+
+        // DOM Elements
+        const homeView = document.getElementById('homeView');
+        const playerView = document.getElementById('playerView');
+        const homeGrid = document.getElementById('homeGrid');
+        const homeSearch = document.getElementById('homeSearch');
         
         const video = document.getElementById('videoPlayer');
         const iframe = document.getElementById('embedPlayer');
@@ -343,9 +330,164 @@
         const mobileOverlay = document.getElementById('mobileOverlay');
         const channelListEl = document.getElementById('channelList');
         const errorOverlay = document.getElementById('errorOverlay');
-        const searchInput = document.getElementById('searchInput');
+        const sidebarSearch = document.getElementById('sidebarSearch');
         const externalPlayerBtn = document.getElementById('externalPlayerBtn');
 
+        // --- PREVIEW LOGIC ---
+        function startPreview(card, channel) {
+            if (channel.type === 'embed') return; // Skip preview for embeds
+
+            // Clear any existing timeout
+            if (previewTimeout) clearTimeout(previewTimeout);
+
+            // Set delay before playing (0.8s) to avoid playing on quick mouse over
+            previewTimeout = setTimeout(() => {
+                const container = card.querySelector('.preview-container');
+                if (!container) return;
+
+                // Create Video Element
+                const vid = document.createElement('video');
+                vid.className = 'w-full h-full object-cover animate-fade-in absolute inset-0 z-10';
+                vid.muted = true;
+                vid.autoplay = true;
+                vid.playsInline = true;
+                vid.style.pointerEvents = 'none'; // Click goes through to card
+
+                container.appendChild(vid);
+                container.classList.remove('hidden');
+
+                if (Hls.isSupported()) {
+                    previewHls = new Hls();
+                    previewHls.loadSource(channel.url);
+                    previewHls.attachMedia(vid);
+                    previewHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        vid.play().catch(() => {});
+                    });
+                } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+                    vid.src = channel.url;
+                    vid.addEventListener('loadedmetadata', () => {
+                        vid.play().catch(() => {});
+                    });
+                }
+            }, 800); 
+        }
+
+        function stopPreview(card) {
+            if (previewTimeout) clearTimeout(previewTimeout);
+            
+            if (previewHls) {
+                previewHls.destroy();
+                previewHls = null;
+            }
+            
+            const container = card.querySelector('.preview-container');
+            if (container) {
+                container.innerHTML = ''; // Remove video element
+                container.classList.add('hidden');
+            }
+        }
+
+        // --- VIEW NAVIGATION ---
+        window.showHome = () => {
+            if (hls) { hls.destroy(); hls = null; }
+            video.pause();
+            iframe.src = "";
+            playerView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            renderHomeGrid();
+        };
+
+        window.showPlayer = (index) => {
+            homeView.classList.add('hidden');
+            playerView.classList.remove('hidden');
+            playChannel(index, true);
+        };
+
+        // --- HOME DASHBOARD LOGIC ---
+        function filterHome(category) {
+            currentCategory = category;
+            renderHomeGrid(homeSearch.value);
+        }
+
+        function renderHomeGrid(filterText = "") {
+            homeGrid.innerHTML = "";
+            
+            const filtered = channels.filter(c => {
+                let catMatch = true;
+                if(currentCategory === 'Live') catMatch = c.category === 'Live' || c.type === 'embed';
+                else if (currentCategory === 'Sport') catMatch = c.category === 'Beinsport' || c.category === 'Monomax' || c.category === 'Sport';
+                else if (currentCategory !== 'All') catMatch = c.category === currentCategory;
+                
+                const textMatch = c.name.toLowerCase().includes(filterText.toLowerCase());
+                return catMatch && textMatch;
+            });
+
+            if (filtered.length === 0) {
+                homeGrid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">No channels found</div>`;
+                return;
+            }
+
+            filtered.forEach((channel) => {
+                const realIndex = channels.indexOf(channel);
+                const card = document.createElement('div');
+                card.className = "relative bg-[#1a1a1a] rounded-xl overflow-hidden cursor-pointer group card-hover border border-white/5 transition-all duration-300";
+                
+                const displayImg = channel.logoUrl || "https://via.placeholder.com/400x225/222/999?text=" + channel.name;
+
+                card.innerHTML = `
+                    <!-- Thumbnail Area -->
+                    <div class="aspect-video relative bg-black/50 overflow-hidden">
+                        <!-- Static Image -->
+                        <img src="${displayImg}" alt="${channel.name}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity z-0 relative">
+                        
+                        <!-- Video Preview Container (Absolute) -->
+                        <div class="preview-container hidden absolute inset-0 z-10 bg-black"></div>
+
+                        <!-- Gradient Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-20 pointer-events-none"></div>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex gap-2 z-30">
+                            <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-lg animate-pulse">LIVE</span>
+                        </div>
+                        
+                        <!-- REMOVED: Top Right Viewers Badge as requested -->
+
+                        <!-- Play Icon (On Hover) -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-30 pointer-events-none">
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 text-white shadow-xl">
+                                <i class="ph-fill ph-play text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Area -->
+                    <div class="p-3 relative z-30 bg-[#1a1a1a]">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-white/5 p-1.5 shrink-0 border border-white/10">
+                                ${channel.logoUrl ? `<img src="${channel.logoUrl}" class="w-full h-full object-contain">` : `<i class="ph ${channel.logo} text-2xl text-gray-400"></i>`}
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-semibold text-gray-200 group-hover:text-white truncate leading-tight mb-1">${channel.name}</h3>
+                                <p class="text-[11px] text-gray-500 uppercase tracking-wider">${channel.category}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Click to play
+                card.onclick = () => showPlayer(realIndex);
+
+                // Mouse Events for Preview
+                card.addEventListener('mouseenter', () => startPreview(card, channel));
+                card.addEventListener('mouseleave', () => stopPreview(card));
+
+                homeGrid.appendChild(card);
+            });
+        }
+
+        // --- PLAYER & SIDEBAR LOGIC (Preserved) ---
+        
         function checkAndroid() {
             const ua = navigator.userAgent.toLowerCase();
             if (ua.indexOf("android") > -1) {
@@ -356,7 +498,6 @@
         window.openInExternalApp = () => {
             if (!currentChannelData) return;
             const url = currentChannelData.url;
-
             if (currentChannelData.type === 'embed') {
                 window.open(url, '_blank');
             } else {
@@ -368,24 +509,55 @@
         };
 
         window.selectCategory = (category, btnElement) => {
-            currentCategory = category;
-            const buttons = document.querySelectorAll('.category-btn');
+            const buttons = document.querySelectorAll('#categoryContainer .category-btn');
             const activeClasses = "active bg-gray-200 text-black shadow-lg shadow-white/10 hover:bg-white".split(" ");
             const inactiveClasses = "bg-zinc-800 text-gray-400 border border-white/5 hover:bg-zinc-700 hover:text-white".split(" ");
-
             buttons.forEach(btn => {
                 btn.classList.remove(...activeClasses);
                 btn.classList.add(...inactiveClasses);
             });
-
             if(btnElement) {
                 btnElement.classList.remove(...inactiveClasses);
                 btnElement.classList.add(...activeClasses);
             }
-            renderChannels(searchInput.value);
+            renderSidebarList(sidebarSearch.value, category);
+        };
+
+        function renderSidebarList(filterText = "", category = "All") {
+            channelListEl.innerHTML = "";
+            const filtered = channels.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(filterText.toLowerCase());
+                const matchesCategory = category === 'All' || c.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            filtered.forEach((channel) => {
+                const realIndex = channels.indexOf(channel);
+                const btn = document.createElement('div'); 
+                btn.id = `chan-${channel.id}`;
+                btn.setAttribute('tabindex', '0'); 
+                btn.className = `channel-item group relative p-3 mb-1 rounded-lg cursor-pointer flex items-center gap-3 border-l-2 border-transparent hover:bg-white/5 outline-none overflow-hidden`;
+                
+                let iconHtml = channel.logoUrl 
+                    ? `<img src="${channel.logoUrl}" alt="${channel.name}" class="w-8 h-8 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300">`
+                    : `<i class="ph ${channel.logo} text-gray-400 group-hover:text-white text-lg transition-colors group-hover:scale-110"></i>`;
+
+                let badge = channel.type === 'embed' ? `<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>` : '';
+
+                btn.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 shadow-inner border border-white/5 overflow-hidden bg-white/5 relative">
+                        ${iconHtml} ${badge}
+                    </div>
+                    <div class="flex-1 min-w-0 z-10">
+                        <h3 class="text-sm font-medium text-gray-300 group-hover:text-white truncate transition-colors">${channel.name}</h3>
+                        <p class="text-[10px] text-gray-500 group-hover:text-gray-400 truncate">${channel.category}</p>
+                    </div>
+                `;
+                btn.onclick = () => showPlayer(realIndex); 
+                channelListEl.appendChild(btn);
+            });
         }
 
-        // Logic สำหรับ Mobile (เลื่อนเข้า-ออก)
         function toggleMenu(forceState) {
             if (typeof forceState !== 'undefined') {
                 if (forceState) {
@@ -424,12 +596,8 @@
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // ปิดเมนูอัตโนมัติเฉพาะบนมือถือ
-            if (window.innerWidth < 1024) {
-                toggleMenu(false);
-            }
-            
-            console.log(`Loading: ${channel.name} [${channel.type || 'stream'}]`);
+            if (window.innerWidth < 1024) toggleMenu(false);
+            console.log(`Loading: ${channel.name}`);
 
             if (channel.type === 'embed') {
                 if (hls) { hls.destroy(); hls = null; }
@@ -473,92 +641,16 @@
             }
         };
 
-        function renderChannels(filterText = "") {
-            channelListEl.innerHTML = "";
-            
-            const filtered = channels.filter(c => {
-                const matchesSearch = c.name.toLowerCase().includes(filterText.toLowerCase());
-                const matchesCategory = currentCategory === 'All' || c.category === currentCategory;
-                return matchesSearch && matchesCategory;
-            });
-
-            if (filtered.length === 0) {
-                channelListEl.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-gray-600 opacity-50">
-                        <i class="ph ph-ghost text-3xl mb-2"></i>
-                        <span class="text-xs">ไม่พบช่องรายการ</span>
-                    </div>`;
-                return;
-            }
-
-            filtered.forEach((channel, index) => {
-                const realIndex = channels.indexOf(channel);
-                const btn = document.createElement('div'); 
-                btn.id = `chan-${channel.id}`;
-                btn.setAttribute('tabindex', '0'); 
-                
-                btn.className = `channel-item group relative p-3 mb-1 rounded-lg cursor-pointer flex items-center gap-3 border-l-2 border-transparent hover:bg-white/5 outline-none overflow-hidden`;
-                
-                let iconHtml = '';
-                if (channel.logoUrl) {
-                    iconHtml = `<img src="${channel.logoUrl}" alt="${channel.name}" class="w-8 h-8 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300">`;
-                } else {
-                    iconHtml = `<i class="ph ${channel.logo} text-gray-400 group-hover:text-white text-lg transition-colors group-hover:scale-110"></i>`;
-                }
-
-                let badge = '';
-                if(channel.type === 'embed') {
-                    badge = `<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>`;
-                }
-
-                btn.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0 shadow-inner border border-white/5 overflow-hidden bg-white/5 relative">
-                        ${iconHtml}
-                        ${badge}
-                    </div>
-                    <div class="flex-1 min-w-0 z-10">
-                        <h3 class="text-sm font-medium text-gray-300 group-hover:text-white truncate transition-colors">${channel.name}</h3>
-                        <p class="text-[10px] text-gray-500 group-hover:text-gray-400 truncate">${channel.category}</p>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <i class="ph-fill ph-play-circle text-gray-300 text-xl shadow-lg shadow-white/20 rounded-full"></i>
-                    </div>
-                `;
-
-                btn.onclick = () => playChannel(realIndex);
-                btn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') playChannel(realIndex);
-                });
-                channelListEl.appendChild(btn);
-            });
-        }
-
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
-            searchInput.addEventListener('input', (e) => renderChannels(e.target.value));
-            renderChannels(); 
+            homeSearch.addEventListener('input', (e) => renderHomeGrid(e.target.value));
+            sidebarSearch.addEventListener('input', (e) => renderSidebarList(e.target.value));
+            
+            renderHomeGrid();
+            renderSidebarList();
             checkAndroid();
 
-            document.addEventListener('keydown', (e) => {
-                const active = document.activeElement;
-                if (active.classList.contains('channel-item')) {
-                    if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        const next = active.nextElementSibling;
-                        if (next) next.focus();
-                    } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        const prev = active.previousElementSibling;
-                        if (prev) prev.focus();
-                    }
-                }
-            });
-
-            // Set default ID to 0 to play the first channel (Embed)
-            const defaultId = 1; 
-            setTimeout(() => {
-                const index = channels.findIndex(c => c.id === defaultId);
-                if(index !== -1) playChannel(index, true);
-            }, 800);
+            // Default: Show Home Dashboard (No auto-play)
         });
     </script>
 </body>
