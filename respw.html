@@ -310,28 +310,226 @@
     <script>
         // --- Data ---
         const channels = [
-            { id: 0, name: "Workpoint", category: "News", logo: "ph-newspaper", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vcxx.png", url: "https://www.livedoomovies.com:4431/02_WORKPOINT_720p/playlist.m3u8" },
-            { id: 1, name: "Mono29", category: "News", logo: "ph-newspaper", logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png", url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8" },
-            { id: 12, name: "Thairath32", category: "News", logo: "ph-newspaper", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Thairath_TV32.svg/2560px-Thairath_TV32.svg.png", url: "https://ssai-streaming.thairath.co.th/bamm-csai/720p/index.m3u8" },
-            { id: 12, name: "Amarin34", category: "News", logo: "ph-newspaper", logoUrl: "https://cms.dmpcdn.com/livetv/2024/07/23/5e86fbc0-48c0-11ef-9fca-d9696b8af2b7_webp_original.webp", url: "https://www.livedoomovies.com:4431/02_AMARINHD_720p/playlist.m3u8" },
-            { id: 12, name: "Ch7", category: "News", logo: "ph-newspaper", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Logo_Channel_7_HD.svg/250px-Logo_Channel_7_HD.svg.png", url: "https://www.livedoomovies.com:4431/02_7HD_720p/playlist.m3u8" },
-            { id: 12, name: "Pptv36", category: "News", logo: "ph-newspaper", logoUrl: "https://cms.dmpcdn.com/livetv/2024/06/26/48fb8a90-338b-11ef-a958-ed31043c43a3_webp_original.webp", url: "https://www.livedoomovies.com:4431/02_PPTVHD_720p/playlist.m3u8" },
-            { id: 2, name: "Bein sport 1", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png", url: "https://www.livedoomovies.com:4431/02_epl1_720p/playlist.m3u8" },
-            { id: 3, name: "Bein sport 2", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png", url: "https://www.livedoomovies.com:4431/02_epl2_720p/playlist.m3u8" },
-            { id: 4, name: "Bein sport 3", category: "Beinsport", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png", url: "https://www.livedoomovies.com:4431/02_epl3_720p/playlist.m3u8" },
-            { id: 5, name: "Monomax 1", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_1HD/playlist.m3u8" },
-            { id: 6, name: "Monomax 2", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_2HD/playlist.m3u8" },
-            { id: 7, name: "Monomax 3", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_3HD/playlist.m3u8" },
-            { id: 8, name: "Monomax 4", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_4HD/playlist.m3u8" },
-            { id: 9, name: "Monomax 5", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_5HD/playlist.m3u8" },
-            { id: 10, name: "Monomax 6", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_6HD/playlist.m3u8" },
-            { id: 11, name: "Monomax 7", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png", url: "https://www.livedoomovies.com:4431/Monomax_PL_7HD/playlist.m3u8" },
-            { id: 11, name: "Truesport 1", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2022/01/12/27f34e20-7374-11ec-b576-afbb0a1303ef_webp_320.png", url: "https://www.livedoomovies.com:4431/02_sport1_720p/playlist.m3u8" },
-            { id: 11, name: "Truesport 2", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://truevisions.co.th/static/6507e535-810f-4798-94f2-39c44e87a849.png", url: "https://www.livedoomovies.com:4431/02_sport2_720p/playlist.m3u8" },
-            { id: 11, name: "Truesport 3", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://f.ptcdn.info/769/077/000/rej4h7j2hVwgSN5sCKG-o.png", url: "https://www.livedoomovies.com:4431/02_sport3_720p/playlist.m3u8" },
-            { id: 11, name: "Truesport 4", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2022/01/12/293236c0-7374-11ec-b576-afbb0a1303ef_webp_320.png", url: "https://www.livedoomovies.com:4431/02_sport4_720p/playlist.m3u8" },
-            { id: 11, name: "Truesport 5", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2019/10/28/c275f890-f972-11e9-a1fc-5dda12c8d080_320.png", url: "https://www.livedoomovies.com:4431/02_sport5_720p/playlist.m3u8" },
-            { id: 11, name: "Truesport 7", category: "Monomax", logo: "ph-soccer-ball", logoUrl: "https://cms.dmpcdn.com/livetv/2019/10/28/e52c8980-f972-11e9-a1fc-5dda12c8d080_320.png", url: "https://www.livedoomovies.com:4431/02_sport7_720p/playlist.m3u8" },
+    {
+        id: 0,
+        name: "Workpoint",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vcxx.png",
+        url: "https://www.livedoomovies.com:4431/02_WORKPOINT_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 1,
+        name: "Mono29",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://www.mono.co.th/wp-content/uploads/2025/06/Mono29.png",
+        url: "https://monomax-uiripn.cdn.byteark.com/plain/th/1080p/index.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 12,
+        name: "Thairath32",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Thairath_TV32.svg/2560px-Thairath_TV32.svg.png",
+        url: "https://ssai-streaming.thairath.co.th/bamm-csai/720p/index.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 12,
+        name: "Amarin34",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2024/07/23/5e86fbc0-48c0-11ef-9fca-d9696b8af2b7_webp_original.webp",
+        url: "https://www.livedoomovies.com:4431/02_AMARINHD_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 12,
+        name: "Ch7",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Logo_Channel_7_HD.svg/250px-Logo_Channel_7_HD.svg.png",
+        url: "https://www.livedoomovies.com:4431/02_7HD_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 12,
+        name: "Pptv36",
+        category: "News",
+        logo: "ph-newspaper",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2024/06/26/48fb8a90-338b-11ef-a958-ed31043c43a3_webp_original.webp",
+        url: "https://www.livedoomovies.com:4431/02_PPTVHD_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 2,
+        name: "Bein sport 1",
+        category: "Beinsport",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png",
+        url: "https://www.livedoomovies.com:4431/02_epl1_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 3,
+        name: "Bein sport 2",
+        category: "Beinsport",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png",
+        url: "https://www.livedoomovies.com:4431/02_epl2_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 4,
+        name: "Bein sport 3",
+        category: "Beinsport",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/rvr.png",
+        url: "https://www.livedoomovies.com:4431/02_epl3_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 5,
+        name: "Monomax 1",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_1HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 6,
+        name: "Monomax 2",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_2HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 7,
+        name: "Monomax 3",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_3HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 8,
+        name: "Monomax 4",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_4HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 9,
+        name: "Monomax 5",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_5HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 10,
+        name: "Monomax 6",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_6HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 11,
+        name: "Monomax 7",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://raw.githubusercontent.com/U53d/design-belizekazi/refs/heads/main/picture/vfde.png",
+        url: "https://www.livedoomovies.com:4431/Monomax_PL_7HD/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 12,
+        name: "Truesport 1",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2022/01/12/27f34e20-7374-11ec-b576-afbb0a1303ef_webp_320.png",
+        url: "https://www.livedoomovies.com:4431/02_sport1_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 13,
+        name: "Truesport 2",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://truevisions.co.th/static/6507e535-810f-4798-94f2-39c44e87a849.png",
+        url: "https://www.livedoomovies.com:4431/02_sport2_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 14,
+        name: "Truesport 3",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://f.ptcdn.info/769/077/000/rej4h7j2hVwgSN5sCKG-o.png",
+        url: "https://www.livedoomovies.com:4431/02_sport3_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 15,
+        name: "Truesport 4",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2022/01/12/293236c0-7374-11ec-b576-afbb0a1303ef_webp_320.png",
+        url: "https://www.livedoomovies.com:4431/02_sport4_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 16,
+        name: "Truesport 5",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2019/10/28/c275f890-f972-11e9-a1fc-5dda12c8d080_320.png",
+        url: "https://www.livedoomovies.com:4431/02_sport5_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    },
+    {
+        id: 17,
+        name: "Truesport 7",
+        category: "Monomax",
+        logo: "ph-soccer-ball",
+        logoUrl: "https://cms.dmpcdn.com/livetv/2019/10/28/e52c8980-f972-11e9-a1fc-5dda12c8d080_320.png",
+        url: "https://www.livedoomovies.com:4431/02_sport7_720p/playlist.m3u8",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        referer: "https://www.movie2k.io/"
+    }
         ];
 
         let hls = null;
