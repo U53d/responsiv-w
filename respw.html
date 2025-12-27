@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>respw</title>
+    <title>Streamed - Responsive Dashboard</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,14 +44,13 @@
         /* Responsive Grid: Adjust min-width for mobile flexibility */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* 260px fits nicely on most mobiles as 1 col, tablets as 2-3 */
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
             gap: 1rem;
         }
         
-        /* Mobile specific grid tweak if needed */
         @media (max-width: 640px) {
             .cards-grid {
-                grid-template-columns: 1fr; /* Force 1 column on small phones for big cards */
+                grid-template-columns: 1fr;
                 gap: 1rem;
             }
         }
@@ -163,13 +162,15 @@
             <div class="flex items-center gap-4 md:gap-8 flex-1">
                 <!-- Logo -->
                 <a href="#" onclick="showHome()" class="flex items-center gap-2 group shrink-0">
-                    <span class="text-xl font-bold tracking-wide hidden sm:block">respw.html</span>
-                    <span class="text-xl font-bold tracking-wide sm:hidden">respw</span>
+                    <i class="ph-fill ph-trophy text-white text-2xl group-hover:text-red-500 transition-colors"></i>
+                    <span class="text-xl font-bold tracking-wide hidden sm:block">Streamed</span>
+                    <span class="text-xl font-bold tracking-wide sm:hidden">TV</span>
                 </a>
                 
                 <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
                     <a href="#" onclick="filterHome('All')" class="hover:text-white transition-colors">Home</a>
+                    <a href="#" onclick="filterHome('Live')" class="hover:text-white transition-colors">Live</a>
                     <a href="#" onclick="filterHome('Sport')" class="hover:text-white transition-colors">Sport</a>
                     <a href="#" onclick="filterHome('News')" class="hover:text-white transition-colors">News</a>
                 </div>
@@ -181,11 +182,19 @@
                         class="bg-[#1a1a1a] text-sm text-white pl-9 pr-4 py-2 rounded-lg border border-white/5 focus:border-white/20 focus:bg-[#252525] outline-none w-full transition-all">
                 </div>
             </div>
+
+            <!-- Right Icons -->
+            <div class="hidden sm:flex items-center gap-2 text-gray-400 ml-4">
+                <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph-fill ph-discord-logo"></i></button>
+                <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph ph-bell"></i></button>
+                <button class="p-2 hover:bg-white/10 rounded-lg"><i class="ph ph-user-circle"></i></button>
+            </div>
         </nav>
 
-        <!-- Mobile Category Nav (Sticky below Navbar) -->
+        <!-- Mobile Category Nav -->
         <div class="md:hidden flex items-center gap-2 overflow-x-auto p-3 bg-[#0b0b0b]/95 backdrop-blur-sm sticky top-16 z-30 border-b border-white/5 no-scrollbar mask-fade-right">
             <button onclick="filterHome('All')" class="mobile-cat-btn px-4 py-1.5 rounded-full bg-white text-black text-sm font-medium whitespace-nowrap shadow-md">All</button>
+            <button onclick="filterHome('Live')" class="mobile-cat-btn px-4 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-gray-300 text-sm whitespace-nowrap hover:bg-white/10">Live</button>
             <button onclick="filterHome('Sport')" class="mobile-cat-btn px-4 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-gray-300 text-sm whitespace-nowrap hover:bg-white/10">Sport</button>
             <button onclick="filterHome('News')" class="mobile-cat-btn px-4 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-gray-300 text-sm whitespace-nowrap hover:bg-white/10">News</button>
             <button onclick="filterHome('Monomax')" class="mobile-cat-btn px-4 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-gray-300 text-sm whitespace-nowrap hover:bg-white/10">Monomax</button>
@@ -263,7 +272,7 @@
             
             <!-- Footer -->
             <div class="p-3 text-center border-t border-white/5 bg-black/20 backdrop-blur text-[10px] text-gray-500 shrink-0 min-w-[18rem]">
-                v2.2.0 (Mobile Responsive)
+                v2.3.0 (Thairath Added)
             </div>
         </div>
 
